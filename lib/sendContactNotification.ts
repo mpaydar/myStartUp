@@ -36,9 +36,6 @@ export async function sendContactSubmissionEmail(options: {
   meetingAt: Date;
   fileName: string;
   fileBlobUrl: string;
-  /** Same bytes stored in Azure — attached so you get a copy in your inbox. */
-  fileBuffer: Buffer;
-  fileContentType: string;
 }): Promise<void> {
   const resend = new Resend(options.apiKey);
   const meetingLabel = options.meetingAt.toLocaleString("en-US", {
@@ -64,15 +61,8 @@ export async function sendContactSubmissionEmail(options: {
       <p style="white-space:pre-wrap">${escapeHtml(options.message)}</p>
       <p><strong>Supporting file name:</strong> ${escapeHtml(options.fileName)}</p>
       <p><strong>File in Azure Blob:</strong> <a href="${href}">${escapeHtml(options.fileBlobUrl)}</a></p>
-      <p><em>The same document is attached to this message.</em></p>
+      <p><em>Open the link above to download the uploaded document from Azure Blob Storage.</em></p>
     `,
-    attachments: [
-      {
-        filename: options.fileName,
-        content: options.fileBuffer,
-        contentType: options.fileContentType,
-      },
-    ],
   });
 
   if (error) {

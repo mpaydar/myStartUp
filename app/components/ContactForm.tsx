@@ -1,5 +1,12 @@
 "use client";
 
+import { MAX_CONTACT_FILE_BYTES } from "@/lib/contactDocument";
+import {
+  getMeetingStartTimeOptions,
+  isAllowedMeetingTime,
+  MEETING_SCHEDULE_ERROR,
+  parseLocalMeetingDateTime,
+} from "@/lib/meetingSchedule";
 import { executeRecaptchaV3, preloadRecaptchaV3 } from "@/lib/recaptchaClient";
 import {
   useCallback,
@@ -27,6 +34,7 @@ const fieldClass =
   "w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-900 shadow-sm outline-none transition-[border-color,box-shadow] placeholder:text-zinc-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/20";
 
 const textAreaClass = `${fieldClass} min-h-[11rem] resize-y py-4 leading-relaxed`;
+const meetingStartTimeOptions = getMeetingStartTimeOptions();
 
 type ContactFormProps = {
   recaptchaSiteKey: string | null;
@@ -109,15 +117,27 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
       return;
     }
 
-    const doc = fd.get("document");
+    if (!isAllowedMeetingTime(meetingTime)) {
+      setError(MEETING_SCHEDULE_ERROR);
+      setStatus("error");
+      return;
+    }
+
+    const doc = inputRef.current?.files?.[0];
     if (!(doc instanceof File) || doc.size === 0) {
       setError("Please attach a supporting document.");
       setStatus("error");
       return;
     }
 
-    const dt = new Date(`${meetingDate}T${meetingTime}`);
-    if (Number.isNaN(dt.getTime())) {
+    if (doc.size > MAX_CONTACT_FILE_BYTES) {
+      setError("File is too large (max 15 MB).");
+      setStatus("error");
+      return;
+    }
+
+    const dt = parseLocalMeetingDateTime(meetingDate, meetingTime);
+    if (!dt) {
       setError("Invalid date or time.");
       setStatus("error");
       return;
@@ -130,6 +150,7 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
     }
 
     fd.append("meetingAt", dt.toISOString());
+    fd.append("meetingTime", meetingTime);
 
     if (!recaptchaSiteKey) {
       setError("The contact form is not available right now. Please try again later.");
@@ -137,18 +158,83 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
       return;
     }
 
-    let recaptchaToken: string;
+    let uploadRecaptchaToken: string;
     try {
-      recaptchaToken = await executeRecaptchaV3(recaptchaSiteKey);
+      uploadRecaptchaToken = await executeRecaptchaV3(recaptchaSiteKey);
     } catch {
       setError("Could not verify reCAPTCHA. Please try again.");
       setStatus("error");
       return;
     }
 
-    fd.append("recaptchaToken", recaptchaToken);
+    fd.delete("document");
 
     try {
+      const uploadUrlRes = await fetch("/api/contact/upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recaptchaToken: uploadRecaptchaToken,
+          fileName: doc.name,
+          fileSize: doc.size,
+          contentType: doc.type || null,
+        }),
+      });
+      const uploadUrlData = (await uploadUrlRes.json().catch(() => ({}))) as {
+        error?: string;
+        uploadUrl?: string;
+        blobUrl?: string;
+        blobName?: string;
+      };
+
+      if (
+        !uploadUrlRes.ok ||
+        !uploadUrlData.uploadUrl ||
+        !uploadUrlData.blobUrl ||
+        !uploadUrlData.blobName
+      ) {
+        setError(
+          uploadUrlData.error ??
+            "Could not prepare file upload. Please try again.",
+        );
+        setStatus("error");
+        return;
+      }
+
+      const uploadRes = await fetch(uploadUrlData.uploadUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": doc.type || "application/octet-stream",
+          "x-ms-blob-type": "BlockBlob",
+        },
+        body: doc,
+      });
+
+      if (!uploadRes.ok) {
+        setError(
+          "Could not upload your document to Azure. Check storage CORS and try again.",
+        );
+        setStatus("error");
+        return;
+      }
+
+      fd.append("fileName", doc.name);
+      fd.append("fileBlobUrl", uploadUrlData.blobUrl);
+      fd.append("fileBlobName", uploadUrlData.blobName);
+      fd.append("fileMimeType", doc.type || "");
+      fd.append("fileSize", String(doc.size));
+
+      let submitRecaptchaToken: string;
+      try {
+        submitRecaptchaToken = await executeRecaptchaV3(recaptchaSiteKey);
+      } catch {
+        setError("Could not verify reCAPTCHA. Please try again.");
+        setStatus("error");
+        return;
+      }
+
+      fd.append("recaptchaToken", submitRecaptchaToken);
+
       const res = await fetch("/api/contact", {
         method: "POST",
         body: fd,
@@ -269,8 +355,8 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
           Schedule a meeting
         </h2>
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Pick a date and time that works for you. Times use your device&apos;s
-          local timezone.
+          Pick a date and a 30-minute start time between 8:00 AM and 7:30 PM in
+          your device&apos;s local timezone.
         </p>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <div className="space-y-2">
@@ -296,14 +382,22 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
             >
               Time
             </label>
-            <input
+            <select
               id="meetingTime"
               name="meetingTime"
-              type="time"
               required
-              step={900}
-              className={`${fieldClass} min-h-[3rem] cursor-pointer [color-scheme:light] dark:[color-scheme:dark]`}
-            />
+              defaultValue=""
+              className={`${fieldClass} min-h-[3rem] cursor-pointer`}
+            >
+              <option value="" disabled>
+                Select a 30-minute slot
+              </option>
+              {meetingStartTimeOptions.map((slot) => (
+                <option key={slot.value} value={slot.value}>
+                  {slot.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
@@ -317,7 +411,8 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
         </span>
         <p className="text-xs text-zinc-500 dark:text-zinc-500">
           Brief, RFP, architecture sketch, or requirements—PDF, Word, text, or
-          image up to 15 MB. Files are stored in your Azure Blob container.
+          image up to 15 MB. Files upload directly to your Azure Blob container;
+          the form only sends the blob link to the server.
         </p>
         <input
           ref={inputRef}

@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 
+import { isAllowedContactFileMeta } from "@/lib/contactDocument";
 import {
+  isAllowedMeetingTime,
+  MEETING_SCHEDULE_ERROR,
+} from "@/lib/meetingSchedule";
+import {
+  isAllowedContactBlobReference,
   isAzureBlobConfigured,
-  uploadContactDocumentToAzure,
 } from "@/lib/azureBlob";
 import { getPrisma } from "@/lib/prisma";
 import {
@@ -16,35 +21,8 @@ import {
 
 export const runtime = "nodejs";
 
-const MAX_FILE_BYTES = 15 * 1024 * 1024;
 const MAX_MESSAGE_LENGTH = 4000;
 const MIN_MESSAGE_LENGTH = 20;
-const ALLOWED_EXT = new Set([
-  "pdf",
-  "doc",
-  "docx",
-  "txt",
-  "png",
-  "jpg",
-  "jpeg",
-  "webp",
-]);
-const ALLOWED_TYPES = new Set([
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "text/plain",
-  "image/png",
-  "image/jpeg",
-  "image/webp",
-]);
-
-function isAllowedFile(file: File): boolean {
-  if (ALLOWED_TYPES.has(file.type)) return true;
-  const ext = file.name.split(".").pop()?.toLowerCase();
-  if (!ext || !ALLOWED_EXT.has(ext)) return false;
-  return !file.type || file.type === "application/octet-stream";
-}
 
 export async function POST(request: Request) {
   let formData: FormData;
@@ -76,7 +54,13 @@ export async function POST(request: Request) {
   const email = String(formData.get("email") ?? "").trim();
   const message = String(formData.get("message") ?? "").trim();
   const meetingAtRaw = String(formData.get("meetingAt") ?? "").trim();
-  const file = formData.get("document");
+  const meetingTime = String(formData.get("meetingTime") ?? "").trim();
+  const fileName = String(formData.get("fileName") ?? "").trim();
+  const fileBlobUrl = String(formData.get("fileBlobUrl") ?? "").trim();
+  const fileBlobName = String(formData.get("fileBlobName") ?? "").trim();
+  const fileMimeTypeRaw = String(formData.get("fileMimeType") ?? "").trim();
+  const fileMimeType = fileMimeTypeRaw || null;
+  const fileSize = Number(formData.get("fileSize"));
 
   if (!firstName || !lastName) {
     return NextResponse.json(
@@ -110,11 +94,15 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!meetingAtRaw) {
+  if (!meetingAtRaw || !meetingTime) {
     return NextResponse.json(
       { error: "Please choose a date and time for your meeting." },
       { status: 400 },
     );
+  }
+
+  if (!isAllowedMeetingTime(meetingTime)) {
+    return NextResponse.json({ error: MEETING_SCHEDULE_ERROR }, { status: 400 });
   }
 
   const meetingAt = new Date(meetingAtRaw);
@@ -133,35 +121,26 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!(file instanceof File) || file.size === 0) {
+  if (!fileName || !fileBlobUrl || !fileBlobName || !Number.isFinite(fileSize)) {
     return NextResponse.json(
       { error: "Please attach a supporting document." },
       { status: 400 },
     );
   }
 
-  if (file.size > MAX_FILE_BYTES) {
-    return NextResponse.json(
-      { error: "File is too large (max 15 MB)." },
-      { status: 413 },
-    );
-  }
-
-  if (!isAllowedFile(file)) {
+  if (
+    !isAllowedContactFileMeta({
+      fileName,
+      fileSize,
+      contentType: fileMimeType,
+    })
+  ) {
     return NextResponse.json(
       {
         error:
           "Unsupported file type. Use PDF, Word, plain text, or an image (PNG, JPEG, WebP).",
       },
       { status: 400 },
-    );
-  }
-
-  if (!process.env.DATABASE_URL) {
-    console.error("DATABASE_URL is not set");
-    return NextResponse.json(
-      { error: "Server is not configured to save submissions yet." },
-      { status: 503 },
     );
   }
 
@@ -174,6 +153,26 @@ export async function POST(request: Request) {
         error:
           "File storage is not configured. Set AZURE_STORAGE_CONNECTION_STRING or AZURE_STORAGE_ACCOUNT_NAME + azure_secret_key.",
       },
+      { status: 503 },
+    );
+  }
+
+  if (
+    !isAllowedContactBlobReference({
+      blobUrl: fileBlobUrl,
+      blobName: fileBlobName,
+    })
+  ) {
+    return NextResponse.json(
+      { error: "Invalid file reference for this submission." },
+      { status: 400 },
+    );
+  }
+
+  if (!process.env.DATABASE_URL) {
+    console.error("DATABASE_URL is not set");
+    return NextResponse.json(
+      { error: "Server is not configured to save submissions yet." },
       { status: 503 },
     );
   }
@@ -201,25 +200,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const bytes = Buffer.from(await file.arrayBuffer());
-  const fileContentType = file.type || "application/octet-stream";
-
-  let fileBlobUrl: string;
-  try {
-    const uploaded = await uploadContactDocumentToAzure({
-      buffer: bytes,
-      originalFileName: file.name,
-      contentType: file.type || null,
-    });
-    fileBlobUrl = uploaded.blobUrl;
-  } catch (err) {
-    console.error("Azure blob upload failed:", err);
-    return NextResponse.json(
-      { error: "Could not upload your document to Azure. Check storage configuration." },
-      { status: 502 },
-    );
-  }
-
   try {
     await getPrisma().contactRequest.create({
       data: {
@@ -228,9 +208,9 @@ export async function POST(request: Request) {
         email,
         message,
         meetingAt,
-        fileName: file.name,
-        fileMimeType: file.type || null,
-        fileSize: file.size,
+        fileName,
+        fileMimeType,
+        fileSize,
         fileBlobUrl,
       },
     });
@@ -253,10 +233,8 @@ export async function POST(request: Request) {
       email,
       message,
       meetingAt,
-      fileName: file.name,
+      fileName,
       fileBlobUrl,
-      fileBuffer: bytes,
-      fileContentType,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";

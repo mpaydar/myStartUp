@@ -1,4 +1,7 @@
-import { BlobServiceClient } from "@azure/storage-blob";
+import {
+  BlobSASPermissions,
+  BlobServiceClient,
+} from "@azure/storage-blob";
 import { randomUUID } from "node:crypto";
 
 /** Container for consultation form attachments (create in Azure if it does not exist). */
@@ -37,11 +40,30 @@ export function isAzureBlobConfigured(): boolean {
   return getAzureStorageConnectionString() !== null;
 }
 
-export async function uploadContactDocumentToAzure(options: {
-  buffer: Buffer;
-  originalFileName: string;
-  contentType: string | null;
-}): Promise<{ blobUrl: string; blobName: string }> {
+export function getAzureStorageAccountName(): string | null {
+  const fromEnv = (
+    process.env.AZURE_STORAGE_ACCOUNT_NAME ||
+    process.env.azure_storage_account_name ||
+    ""
+  ).trim();
+  if (fromEnv) return fromEnv;
+
+  const connectionString = getAzureStorageConnectionString();
+  if (!connectionString) return null;
+
+  const match = connectionString.match(/AccountName=([^;]+)/i);
+  return match?.[1]?.trim() || null;
+}
+
+export function getAzureStorageContainerName(): string {
+  return (
+    process.env.AZURE_STORAGE_CONTAINER_NAME ||
+    process.env.azure_storage_container_name ||
+    ""
+  ).trim() || DEFAULT_CONTAINER;
+}
+
+async function getContactAttachmentContainer() {
   const connectionString = getAzureStorageConnectionString();
   if (!connectionString) {
     throw new Error(
@@ -49,26 +71,56 @@ export async function uploadContactDocumentToAzure(options: {
     );
   }
 
-  const containerName = (
-    process.env.AZURE_STORAGE_CONTAINER_NAME ||
-    process.env.azure_storage_container_name ||
-    ""
-  ).trim() || DEFAULT_CONTAINER;
-
   const service = BlobServiceClient.fromConnectionString(connectionString);
-  const container = service.getContainerClient(containerName);
+  const container = service.getContainerClient(getAzureStorageContainerName());
   await container.createIfNotExists();
+  return container;
+}
 
-  const safe = sanitizeForBlobName(options.originalFileName);
-  const blobName = `${randomUUID()}-${safe}`;
+export function buildContactBlobName(originalFileName: string): string {
+  const safe = sanitizeForBlobName(originalFileName);
+  return `${randomUUID()}-${safe}`;
+}
+
+export async function createContactDocumentUploadTarget(options: {
+  originalFileName: string;
+  contentType: string | null;
+}): Promise<{ uploadUrl: string; blobUrl: string; blobName: string }> {
+  const container = await getContactAttachmentContainer();
+  const blobName = buildContactBlobName(options.originalFileName);
   const blockBlob = container.getBlockBlobClient(blobName);
+  const contentType = options.contentType || "application/octet-stream";
 
-  await blockBlob.uploadData(options.buffer, {
-    blobHTTPHeaders: {
-      blobContentType:
-        options.contentType || "application/octet-stream",
-    },
+  const uploadUrl = await blockBlob.generateSasUrl({
+    permissions: BlobSASPermissions.parse("cw"),
+    expiresOn: new Date(Date.now() + 15 * 60 * 1000),
+    contentType,
   });
 
-  return { blobUrl: blockBlob.url, blobName };
+  return {
+    uploadUrl,
+    blobUrl: blockBlob.url,
+    blobName,
+  };
+}
+
+export function isAllowedContactBlobReference(options: {
+  blobUrl: string;
+  blobName: string;
+}): boolean {
+  const accountName = getAzureStorageAccountName();
+  if (!accountName) return false;
+
+  try {
+    const url = new URL(options.blobUrl);
+    if (url.hostname !== `${accountName}.blob.core.windows.net`) return false;
+
+    const containerName = getAzureStorageContainerName();
+    const expectedPath = `/${containerName}/${options.blobName}`;
+    if (url.pathname !== expectedPath) return false;
+
+    return true;
+  } catch {
+    return false;
+  }
 }
