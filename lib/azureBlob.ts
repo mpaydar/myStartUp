@@ -7,6 +7,25 @@ import { randomUUID } from "node:crypto";
 /** Container for consultation form attachments (create in Azure if it does not exist). */
 const DEFAULT_CONTAINER = "consultation-attachment";
 
+const DEFAULT_BLOB_CORS_ORIGINS = [
+  "http://localhost:3000",
+  "https://simbayai.vercel.app",
+];
+
+const DEFAULT_BLOB_CORS_ALLOWED_HEADERS = [
+  "content-type",
+  "x-ms-blob-type",
+  "x-ms-blob-content-type",
+  "x-ms-version",
+  "x-ms-date",
+  "x-ms-client-request-id",
+  "authorization",
+  "accept",
+  "origin",
+].join(",");
+
+let blobServiceCorsConfigured = false;
+
 function sanitizeForBlobName(original: string): string {
   const base = original.replace(/[/\\]/g, "_").replace(/[^a-zA-Z0-9._-]/g, "_");
   return base.length > 120 ? base.slice(-120) : base || "upload";
@@ -63,7 +82,7 @@ export function getAzureStorageContainerName(): string {
   ).trim() || DEFAULT_CONTAINER;
 }
 
-async function getContactAttachmentContainer() {
+function getBlobServiceClient(): BlobServiceClient {
   const connectionString = getAzureStorageConnectionString();
   if (!connectionString) {
     throw new Error(
@@ -71,7 +90,65 @@ async function getContactAttachmentContainer() {
     );
   }
 
-  const service = BlobServiceClient.fromConnectionString(connectionString);
+  return BlobServiceClient.fromConnectionString(connectionString);
+}
+
+function getBlobCorsOrigins(): string[] {
+  const raw = process.env.AZURE_BLOB_CORS_ORIGINS?.trim();
+  if (!raw) return DEFAULT_BLOB_CORS_ORIGINS;
+
+  return raw
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
+function getBlobCorsAllowedHeaders(): string {
+  return (
+    process.env.AZURE_BLOB_CORS_ALLOWED_HEADERS?.trim() ||
+    DEFAULT_BLOB_CORS_ALLOWED_HEADERS
+  );
+}
+
+async function ensureBlobServiceCorsConfigured(): Promise<void> {
+  if (blobServiceCorsConfigured) return;
+
+  const service = getBlobServiceClient();
+  const origins = getBlobCorsOrigins();
+  const allowedHeaders = getBlobCorsAllowedHeaders();
+  const allowedMethods = "GET,PUT,OPTIONS,HEAD";
+  const allowedOrigins = origins.join(",");
+
+  try {
+    const properties = await service.getProperties();
+    const existingRules = properties.cors ?? [];
+    const nextRules = existingRules.filter(
+      (rule) => rule.allowedOrigins !== allowedOrigins,
+    );
+
+    nextRules.push({
+      allowedOrigins,
+      allowedMethods,
+      allowedHeaders,
+      exposedHeaders: "*",
+      maxAgeInSeconds: 3600,
+    });
+
+    await service.setProperties({
+      ...properties,
+      cors: nextRules,
+    });
+    blobServiceCorsConfigured = true;
+  } catch (err) {
+    console.error(
+      "Could not configure Azure Blob CORS automatically. Set Blob service CORS in Azure Portal with Content-Type and x-ms-blob-type allowed.",
+      err,
+    );
+  }
+}
+
+async function getContactAttachmentContainer() {
+  const service = getBlobServiceClient();
   const container = service.getContainerClient(getAzureStorageContainerName());
   await container.createIfNotExists();
   return container;
@@ -85,7 +162,14 @@ export function buildContactBlobName(originalFileName: string): string {
 export async function createContactDocumentUploadTarget(options: {
   originalFileName: string;
   contentType: string | null;
-}): Promise<{ uploadUrl: string; blobUrl: string; blobName: string }> {
+}): Promise<{
+  uploadUrl: string;
+  blobUrl: string;
+  blobName: string;
+  contentType: string;
+}> {
+  await ensureBlobServiceCorsConfigured();
+
   const container = await getContactAttachmentContainer();
   const blobName = buildContactBlobName(options.originalFileName);
   const blockBlob = container.getBlockBlobClient(blobName);
@@ -101,6 +185,7 @@ export async function createContactDocumentUploadTarget(options: {
     uploadUrl,
     blobUrl: blockBlob.url,
     blobName,
+    contentType,
   };
 }
 

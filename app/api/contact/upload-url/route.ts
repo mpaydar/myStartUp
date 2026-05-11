@@ -84,6 +84,7 @@ export async function POST(request: Request) {
       uploadUrl: target.uploadUrl,
       blobUrl: target.blobUrl,
       blobName: target.blobName,
+      contentType: target.contentType,
     });
   } catch (err) {
     console.error("Azure upload URL generation failed:", err);

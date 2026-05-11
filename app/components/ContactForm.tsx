@@ -185,13 +185,15 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
         uploadUrl?: string;
         blobUrl?: string;
         blobName?: string;
+        contentType?: string;
       };
 
       if (
         !uploadUrlRes.ok ||
         !uploadUrlData.uploadUrl ||
         !uploadUrlData.blobUrl ||
-        !uploadUrlData.blobName
+        !uploadUrlData.blobName ||
+        !uploadUrlData.contentType
       ) {
         setError(
           uploadUrlData.error ??
@@ -204,7 +206,7 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
       const uploadRes = await fetch(uploadUrlData.uploadUrl, {
         method: "PUT",
         headers: {
-          "Content-Type": doc.type || "application/octet-stream",
+          "Content-Type": uploadUrlData.contentType,
           "x-ms-blob-type": "BlockBlob",
         },
         body: doc,
