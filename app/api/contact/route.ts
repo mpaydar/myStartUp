@@ -17,6 +17,8 @@ import {
 export const runtime = "nodejs";
 
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
+const MAX_MESSAGE_LENGTH = 4000;
+const MIN_MESSAGE_LENGTH = 20;
 const ALLOWED_EXT = new Set([
   "pdf",
   "doc",
@@ -72,6 +74,7 @@ export async function POST(request: Request) {
   const firstName = String(formData.get("firstName") ?? "").trim();
   const lastName = String(formData.get("lastName") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
+  const message = String(formData.get("message") ?? "").trim();
   const meetingAtRaw = String(formData.get("meetingAt") ?? "").trim();
   const file = formData.get("document");
 
@@ -85,6 +88,24 @@ export async function POST(request: Request) {
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json(
       { error: "A valid email address is required." },
+      { status: 400 },
+    );
+  }
+
+  if (message.length < MIN_MESSAGE_LENGTH) {
+    return NextResponse.json(
+      {
+        error: `Please describe what you need in at least ${MIN_MESSAGE_LENGTH} characters.`,
+      },
+      { status: 400 },
+    );
+  }
+
+  if (message.length > MAX_MESSAGE_LENGTH) {
+    return NextResponse.json(
+      {
+        error: `Your description is too long (max ${MAX_MESSAGE_LENGTH} characters).`,
+      },
       { status: 400 },
     );
   }
@@ -205,6 +226,7 @@ export async function POST(request: Request) {
         firstName,
         lastName,
         email,
+        message,
         meetingAt,
         fileName: file.name,
         fileMimeType: file.type || null,
@@ -229,6 +251,7 @@ export async function POST(request: Request) {
       firstName,
       lastName,
       email,
+      message,
       meetingAt,
       fileName: file.name,
       fileBlobUrl,

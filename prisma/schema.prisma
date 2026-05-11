@@ -12,6 +12,7 @@ model ContactRequest {
   firstName    String
   lastName     String
   email        String
+  message      String?  @db.Text
   meetingAt    DateTime?
   fileName     String
   fileMimeType String?

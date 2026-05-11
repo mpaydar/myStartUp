@@ -32,6 +32,7 @@ export async function sendContactSubmissionEmail(options: {
   firstName: string;
   lastName: string;
   email: string;
+  message: string;
   meetingAt: Date;
   fileName: string;
   fileBlobUrl: string;
@@ -59,6 +60,8 @@ export async function sendContactSubmissionEmail(options: {
       <p><strong>${escapeHtml(fullName)}</strong> has submitted a request and their appointment details are on file.</p>
       <p><strong>Their email (reply-to):</strong> ${escapeHtml(options.email)}</p>
       <p><strong>Requested meeting:</strong> ${escapeHtml(meetingLabel)}</p>
+      <p><strong>What they need:</strong></p>
+      <p style="white-space:pre-wrap">${escapeHtml(options.message)}</p>
       <p><strong>Supporting file name:</strong> ${escapeHtml(options.fileName)}</p>
       <p><strong>File in Azure Blob:</strong> <a href="${href}">${escapeHtml(options.fileBlobUrl)}</a></p>
       <p><em>The same document is attached to this message.</em></p>

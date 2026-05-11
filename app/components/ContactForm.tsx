@@ -20,8 +20,13 @@ function getMinDateSnapshot() {
 
 type Status = "idle" | "submitting" | "success" | "error";
 
+const MAX_MESSAGE_LENGTH = 4000;
+const MIN_MESSAGE_LENGTH = 20;
+
 const fieldClass =
   "w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-900 shadow-sm outline-none transition-[border-color,box-shadow] placeholder:text-zinc-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/20";
+
+const textAreaClass = `${fieldClass} min-h-[11rem] resize-y py-4 leading-relaxed`;
 
 type ContactFormProps = {
   recaptchaSiteKey: string | null;
@@ -33,6 +38,7 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [messageLength, setMessageLength] = useState(0);
   const minDate = useSyncExternalStore(
     subscribeMinDate,
     getMinDateSnapshot,
@@ -71,6 +77,23 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError("Please enter a valid email address.");
+      setStatus("error");
+      return;
+    }
+
+    const message = String(fd.get("message") ?? "").trim();
+    if (message.length < MIN_MESSAGE_LENGTH) {
+      setError(
+        `Please describe what you need in at least ${MIN_MESSAGE_LENGTH} characters.`,
+      );
+      setStatus("error");
+      return;
+    }
+
+    if (message.length > MAX_MESSAGE_LENGTH) {
+      setError(
+        `Your description is too long (max ${MAX_MESSAGE_LENGTH} characters).`,
+      );
       setStatus("error");
       return;
     }
@@ -148,6 +171,7 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
       setStatus("success");
       form.reset();
       setFileName(null);
+      setMessageLength(0);
     } catch {
       setError("Network error. Check your connection and try again.");
       setStatus("error");
@@ -209,6 +233,35 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
           placeholder="you@company.com"
           className={fieldClass}
         />
+      </div>
+
+      <div className="rounded-2xl border border-zinc-200/90 bg-white/70 p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/40 sm:p-7">
+        <label
+          htmlFor="message"
+          className="text-base font-semibold text-zinc-900 dark:text-zinc-50"
+        >
+          What do you need help with?
+        </label>
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+          Goals, stack, timeline, compliance needs, or anything that helps us
+          prepare for your call.
+        </p>
+        <textarea
+          id="message"
+          name="message"
+          required
+          rows={6}
+          maxLength={MAX_MESSAGE_LENGTH}
+          placeholder="Example: We need an AI gateway in front of our internal APIs, with HIPAA-aware logging and lower LLM spend. We are on AWS and want a phased rollout over the next quarter."
+          className={`${textAreaClass} mt-4`}
+          onChange={(e) => setMessageLength(e.target.value.length)}
+        />
+        <div className="mt-2 flex items-center justify-between gap-3 text-xs text-zinc-500 dark:text-zinc-500">
+          <span>At least {MIN_MESSAGE_LENGTH} characters</span>
+          <span aria-live="polite">
+            {messageLength.toLocaleString()} / {MAX_MESSAGE_LENGTH.toLocaleString()}
+          </span>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-teal-200/80 bg-teal-50/40 p-6 dark:border-teal-900/50 dark:bg-teal-950/25">
