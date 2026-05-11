@@ -1,5 +1,6 @@
 "use client";
 
+import { executeRecaptchaV3 } from "@/lib/recaptchaClient";
 import {
   useCallback,
   useRef,
@@ -21,7 +22,11 @@ type Status = "idle" | "submitting" | "success" | "error";
 const fieldClass =
   "w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-900 shadow-sm outline-none transition-[border-color,box-shadow] placeholder:text-zinc-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/20";
 
-export function ContactForm() {
+type ContactFormProps = {
+  recaptchaSiteKey: string | null;
+};
+
+export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
   const [status, setStatus] = useState<Status>("idle");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -94,6 +99,23 @@ export function ContactForm() {
     }
 
     fd.append("meetingAt", dt.toISOString());
+
+    if (!recaptchaSiteKey) {
+      setError("The contact form is not available right now. Please try again later.");
+      setStatus("error");
+      return;
+    }
+
+    let recaptchaToken: string;
+    try {
+      recaptchaToken = await executeRecaptchaV3(recaptchaSiteKey);
+    } catch {
+      setError("Could not verify reCAPTCHA. Please try again.");
+      setStatus("error");
+      return;
+    }
+
+    fd.append("recaptchaToken", recaptchaToken);
 
     try {
       const res = await fetch("/api/contact", {
@@ -291,6 +313,16 @@ export function ContactForm() {
         </p>
       ) : null}
 
+      {!recaptchaSiteKey ? (
+        <p
+          className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100"
+          role="status"
+        >
+          reCAPTCHA is not configured. Add your site key to the environment
+          before accepting submissions.
+        </p>
+      ) : null}
+
       {status === "success" && successMessage ? (
         <div
           className="rounded-xl border border-teal-200 bg-teal-50 px-5 py-4 text-teal-950 dark:border-teal-800 dark:bg-teal-950/50 dark:text-teal-50"
@@ -305,11 +337,35 @@ export function ContactForm() {
 
       <button
         type="submit"
-        disabled={status === "submitting"}
+        disabled={status === "submitting" || !recaptchaSiteKey}
         className="inline-flex h-12 w-full items-center justify-center rounded-full bg-teal-600 text-sm font-semibold text-white shadow-sm transition-[transform,background-color] enabled:hover:scale-[1.01] enabled:hover:bg-teal-500 enabled:active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-[200px]"
       >
         {status === "submitting" ? "Sending…" : "Send message"}
       </button>
+
+      {recaptchaSiteKey ? (
+        <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-500">
+          This site is protected by reCAPTCHA and the Google{" "}
+          <a
+            href="https://policies.google.com/privacy"
+            className="underline underline-offset-2 hover:text-zinc-700 dark:hover:text-zinc-300"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Privacy Policy
+          </a>{" "}
+          and{" "}
+          <a
+            href="https://policies.google.com/terms"
+            className="underline underline-offset-2 hover:text-zinc-700 dark:hover:text-zinc-300"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Terms of Service
+          </a>{" "}
+          apply.
+        </p>
+      ) : null}
     </form>
   );
 }

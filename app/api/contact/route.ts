@@ -6,6 +6,10 @@ import {
 } from "@/lib/azureBlob";
 import { getPrisma } from "@/lib/prisma";
 import {
+  isRecaptchaConfigured,
+  verifyRecaptchaToken,
+} from "@/lib/recaptcha";
+import {
   getNotificationEmailConfig,
   sendContactSubmissionEmail,
 } from "@/lib/sendContactNotification";
@@ -49,6 +53,20 @@ export async function POST(request: Request) {
       { error: "Invalid form submission." },
       { status: 400 },
     );
+  }
+
+  if (!isRecaptchaConfigured()) {
+    console.error("reCAPTCHA is not configured");
+    return NextResponse.json(
+      { error: "The contact form is not available right now." },
+      { status: 503 },
+    );
+  }
+
+  const recaptchaToken = String(formData.get("recaptchaToken") ?? "").trim();
+  const recaptchaResult = await verifyRecaptchaToken(recaptchaToken);
+  if (!recaptchaResult.ok) {
+    return NextResponse.json({ error: recaptchaResult.error }, { status: 400 });
   }
 
   const firstName = String(formData.get("firstName") ?? "").trim();

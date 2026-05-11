@@ -5,76 +5,58 @@ import { SiteHeader } from "./components/SiteHeader";
 
 const services = [
   {
-    title: "CI/CD integration",
+    title: "Cloud consultation",
     description:
-      "Pipelines, release automation, quality gates, and observability so every deploy is predictable and reversible.",
-    icon: "⟲",
-    imageSrc:
-      "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Developer reviewing code on multiple monitors",
-  },
-  {
-    title: "Web applications",
-    description:
-      "Production-grade frontends and full-stack apps: performance, accessibility, and maintainability from day one.",
-    icon: "◇",
-    imageSrc:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Laptop showing analytics dashboard",
-  },
-  {
-    title: "AI agent development",
-    description:
-      "Agents that use your tools safely: planning, retrieval, structured outputs, and human-in-the-loop where it matters.",
-    icon: "◆",
-    imageSrc:
-      "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Abstract visualization suggesting AI and neural networks",
-  },
-  {
-    title: "LLM tokenization & cost optimization",
-    description:
-      "Prompt design, caching, batching, and model routing to cut latency and spend without sacrificing quality.",
-    icon: "⌁",
-    imageSrc:
-      "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Programming workspace with code on screen",
-  },
-  {
-    title: "Dockerization",
-    description:
-      "Multi-stage images, compose for local parity, hardened non-root runtimes, and CI that builds and scans containers.",
-    icon: "▣",
-    imageSrc:
-      "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Server room and network infrastructure",
-  },
-  {
-    title: "Cloud Services (AWS & Server)",
-    description:
-      "Design and operate cloud infrastructure across AWS and Linux servers with secure networking, observability, backups, and cost-aware scaling.",
+      "Architecture and operations guidance across AWS and server environments—networking, security baselines, cost control, and patterns that scale with your workload.",
     icon: "☁",
     imageSrc:
       "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=640&h=400&fit=crop&q=80",
     imageAlt: "Global cloud network over planet earth at night",
   },
   {
-    title: "ETL data pipeline",
+    title: "Data pipelining & ML model development",
     description:
-      "Build reliable extract-transform-load pipelines with validation, scheduling, monitoring, and reproducible data flows for analytics and AI workloads.",
+      "ETL/ELT pipelines, feature-ready data layers, and model development workflows so analytics and ML stay reliable, observable, and reproducible.",
     icon: "⇄",
     imageSrc:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=640&h=400&fit=crop&q=80",
     imageAlt: "Data dashboard with charts and pipeline-like flows",
   },
   {
-    title: "Database design",
+    title: "Automation",
     description:
-      "Model schemas for performance and integrity, define indexing strategies, and plan migrations so databases stay fast and maintainable as products evolve.",
-    icon: "◫",
+      "End-to-end automation of repetitive workflows—integrations, orchestration, and guardrails so teams spend less time on manual ops and more on outcomes.",
+    icon: "⟲",
     imageSrc:
-      "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Developer reviewing database architecture diagrams",
+      "https://images.unsplash.com/photo-1518186288769-bb62996cf1df?w=640&h=400&fit=crop&q=80",
+    imageAlt: "Automation and workflow concept with gears and light",
+  },
+  {
+    title: "AI agent development",
+    description:
+      "Agents grounded in your tools and data: planning, retrieval, structured outputs, and human-in-the-loop where risk or compliance requires it.",
+    icon: "◆",
+    imageSrc:
+      "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=640&h=400&fit=crop&q=80",
+    imageAlt: "Abstract visualization suggesting AI and neural networks",
+  },
+  {
+    title: "Tuning of agents",
+    description:
+      "Prompt and tool design, evaluation loops, latency and quality tradeoffs, and operational tuning so agents behave consistently in production.",
+    icon: "⌁",
+    imageSrc:
+      "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=640&h=400&fit=crop&q=80",
+    imageAlt: "Programming workspace with code on screen",
+  },
+  {
+    title: "AI gateway design",
+    description:
+      "Gateways that tie policy to execution: IAM, privacy controls for sensitive data, and alignment with HIPAA, GDPR, CCPA/CPRA, and FERPA expectations—plus LLM tokenization and cost reduction.",
+    icon: "▣",
+    imageSrc:
+      "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=640&h=400&fit=crop&q=80",
+    imageAlt: "Abstract technology and secure data flows",
   },
 ];
 
@@ -98,20 +80,20 @@ const credibilityStrip = [
 
 const gatewayCapabilities = [
   {
-    title: "Identity & access (IAM)",
-    body: "SSO, RBAC, and tenant boundaries so AI features respect your org’s policies.",
+    title: "Policy & IAM",
+    body: "Enforce who can call what, with audit trails and tenant boundaries so AI behavior matches internal and regulatory policy.",
   },
   {
-    title: "API integration",
-    body: "Connect models and agents to your systems with stable contracts, retries, and audit trails.",
+    title: "Privacy & sensitive data",
+    body: "Minimize exposure of PHI, student records, and personal data—classification, redaction patterns, and controlled retention in the gateway path.",
   },
   {
-    title: "Cloud migration",
-    body: "Move workloads and data paths safely—networking, secrets, and cost controls included.",
+    title: "Compliance alignment",
+    body: "Design for HIPAA, GDPR, CCPA/CPRA, and FERPA-style requirements as your legal team defines them—not checkbox marketing, but architecture you can defend.",
   },
   {
-    title: "Governance & more",
-    body: "Rate limits, logging, PII handling, and vendor strategy aligned with how you already operate.",
+    title: "Token & cost efficiency",
+    body: "Caching, routing, prompt shaping, and batching at the gateway to cut LLM tokenization and spend without giving up quality.",
   },
 ];
 
@@ -133,18 +115,22 @@ export default function Home() {
           <div className="relative grid gap-12 lg:grid-cols-2 lg:items-center">
             <div>
               <p className="animate-hero-in mb-4 inline-flex items-center rounded-full border border-teal-200/80 bg-teal-50 px-3 py-1 text-xs font-medium text-teal-800 dark:border-teal-900/60 dark:bg-teal-950/40 dark:text-teal-200">
-                Engineering · AI · Cloud
+                Cloud · Data · Agents · Gateway
               </p>
               <h1 className="animate-hero-in-delay-1 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl sm:leading-[1.1]">
-                Build reliable software and AI that fits how your company already
-                works.
+                Architecting Secure, Cost-Efficient AI Infrastructure.
               </h1>
               <p className="animate-hero-in-delay-2 mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-                From CI/CD and modern web apps to agents, gateway design, and
-                token-efficient LLM usage—We help teams ship faster with fewer
-                surprises in production.
+                We move beyond the interface to solve complex backend challenges:
+                high-velocity data pipelines, ML model deployment, and autonomous
+                agent tuning. Our AI gateways integrate rigorous privacy controls
+                and policy enforcement (HIPAA/GDPR) while optimizing tokenization
+                to slash your operational spend.
               </p>
-              <p className="animate-hero-in-delay-2 mt-4 inline-flex max-w-2xl items-center rounded-full border border-teal-200/80 bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-800 shadow-sm dark:border-teal-900/60 dark:bg-teal-950/40 dark:text-teal-200">
+              <p className="animate-hero-in-delay-2 mt-4 max-w-2xl text-base font-semibold leading-relaxed text-zinc-800 dark:text-zinc-200">
+                Let us handle your platform in this AI era with confidence.
+              </p>
+              <p className="animate-hero-in-delay-2 mt-3 inline-flex max-w-2xl items-center rounded-full border border-teal-200/80 bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-800 shadow-sm dark:border-teal-900/60 dark:bg-teal-950/40 dark:text-teal-200">
                 Supporting startups from pre-seed to late stage · Deferred
                 payment available
               </p>
@@ -194,8 +180,8 @@ export default function Home() {
                 />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-900/40 via-transparent to-transparent dark:from-black/50" />
                 <p className="absolute bottom-4 left-4 right-4 text-sm font-medium text-white drop-shadow-md">
-                  Hands-on delivery with your stakeholders and stack—not generic
-                  slides.
+                  Beyond the interface—pipelines, ML deployment, and governed AI
+                  gateways.
                 </p>
               </div>
             </div>
@@ -233,11 +219,12 @@ export default function Home() {
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <Reveal>
               <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                What I can help you with
+                Where I focus
               </h2>
               <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-400">
-                Focused engagements: clear scope, concrete deliverables, and
-                handoff your team can own.
+                No standalone web-application builds—targeted work on cloud,
+                pipelines, automation, agents, gateway design, and responsible
+                use of sensitive data.
               </p>
             </Reveal>
             <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -291,12 +278,13 @@ export default function Home() {
                   </div>
                   <div className="flex flex-col justify-center bg-gradient-to-br from-teal-700 via-teal-800 to-zinc-950 p-8 sm:p-12">
                     <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                      AI gateway for real company needs
+                      AI gateway: policy, privacy, and industrial-grade guardrails
                     </h2>
                     <p className="mt-4 max-w-xl text-teal-100">
-                      A gateway is not just an API key—it is how you enforce IAM,
-                      integrate internal and partner APIs, migrate safely to the
-                      cloud, and keep AI spend and risk under control.
+                      From integrating corporate policy to handling sensitive data
+                      in line with HIPAA, GDPR, CCPA/CPRA, and FERPA expectations—your
+                      gateway is where access, logging, and token-efficient routing
+                      come together.
                     </p>
                     <ul className="mt-10 grid gap-4 sm:grid-cols-2">
                       {gatewayCapabilities.map((cap) => (
@@ -361,7 +349,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-zinc-500 sm:flex-row sm:px-6">
           <p>© {new Date().getFullYear()} SimBay AI. All rights reserved.</p>
           <p className="text-center sm:text-right">
-            CI/CD · Web · Agents · LLM efficiency · Docker · AI gateway
+            Cloud · Data & ML · Automation · Agents · Gateway · Compliance
           </p>
         </div>
       </footer>

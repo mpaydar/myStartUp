@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { getRecaptchaSiteKey } from "@/lib/recaptcha";
 import { ContactForm } from "../components/ContactForm";
 import { SiteHeader } from "../components/SiteHeader";
 
@@ -11,6 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default function GetTouchPage() {
+  const recaptchaSiteKey = getRecaptchaSiteKey();
+
   return (
     <div className="min-h-full bg-gradient-to-b from-zinc-50 via-white to-zinc-50 text-zinc-900 dark:from-zinc-950 dark:via-zinc-950 dark:to-black dark:text-zinc-100">
       <SiteHeader />
@@ -48,7 +51,7 @@ export default function GetTouchPage() {
           </div>
 
           <div className="mt-10 rounded-3xl border border-zinc-200/90 bg-white/80 p-6 shadow-lg shadow-zinc-200/40 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/80 dark:shadow-none sm:p-10">
-            <ContactForm />
+            <ContactForm recaptchaSiteKey={recaptchaSiteKey} />
           </div>
         </div>
       </main>

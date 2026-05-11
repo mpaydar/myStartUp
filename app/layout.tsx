@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SimBay AI — Engineering & AI services",
+  title: "SimBay AI — Secure, cost-efficient AI infrastructure",
   description:
-    "CI/CD, Dockerization, web applications, AI agents, LLM tokenization and cost optimization, free prototyping session, and AI gateway integration including IAM, APIs, and cloud migration.",
+    "Architecting secure, cost-efficient AI infrastructure: high-velocity data pipelines, ML deployment, autonomous agent tuning, and AI gateways with privacy controls and policy enforcement (HIPAA/GDPR) plus tokenization optimization to reduce operational spend.",
 };
 
 export default function RootLayout({
