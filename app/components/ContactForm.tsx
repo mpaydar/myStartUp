@@ -398,11 +398,6 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
 
       {recaptchaSiteKey ? (
         <div className="rounded-xl border border-zinc-200/90 bg-zinc-50/80 px-4 py-3 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900/50 dark:text-zinc-400">
-          <p>
-            Spam protection uses Google reCAPTCHA v3. There is no checkbox;
-            verification runs automatically when you send this form. You may also
-            see Google&apos;s reCAPTCHA badge in the corner of the page.
-          </p>
           <p className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-500">
             This site is protected by reCAPTCHA and the Google{" "}
             <a
