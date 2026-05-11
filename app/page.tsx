@@ -28,8 +28,8 @@ const services = [
       "End-to-end automation of repetitive workflows—integrations, orchestration, and guardrails so teams spend less time on manual ops and more on outcomes.",
     icon: "⟲",
     imageSrc:
-      "https://images.unsplash.com/photo-1518186288769-bb62996cf1df?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Automation and workflow concept with gears and light",
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=640&h=400&fit=crop&q=80",
+    imageAlt: "Developer workspace with laptop and connected workflow tools",
   },
   {
     title: "AI agent development",
