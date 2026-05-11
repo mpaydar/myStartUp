@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Schedule a meeting, send your project details, and attach a supporting document.",
 };
 
-export default function GetTouchPage() {
+export default function GetInTouchPage() {
   const recaptchaSiteKey = getRecaptchaSiteKey();
 
   return (

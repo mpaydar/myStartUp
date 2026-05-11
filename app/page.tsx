@@ -151,7 +151,7 @@ export default function Home() {
                   concrete on the table. No obligation.
                 </p>
                 <a
-                  href="/get_touch"
+                  href="/get_in_touch"
                   className="mt-5 inline-flex h-11 items-center justify-center rounded-full bg-teal-600 px-6 text-sm font-semibold text-white shadow-sm transition-[transform,background-color] duration-200 hover:scale-[1.02] hover:bg-teal-500 active:scale-[0.98]"
                 >
                   Book your free prototype
@@ -334,7 +334,7 @@ export default function Home() {
               </Reveal>
               <Reveal delayMs={80}>
                 <a
-                  href="/get_touch"
+                  href="/get_in_touch"
                   className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-8 text-sm font-semibold text-white transition-[transform,background-color] duration-200 hover:scale-[1.03] hover:bg-zinc-800 active:scale-[0.98] dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white sm:mx-0"
                 >
                   Open contact form
