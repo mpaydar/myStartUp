@@ -11,6 +11,10 @@ declare global {
   }
 }
 
+export function preloadRecaptchaV3(siteKey: string): Promise<void> {
+  return loadRecaptchaScript(siteKey);
+}
+
 function loadRecaptchaScript(siteKey: string): Promise<void> {
   if (typeof window === "undefined") {
     return Promise.reject(new Error("reCAPTCHA is only available in the browser."));
