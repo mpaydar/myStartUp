@@ -325,11 +325,11 @@ export default function Home() {
             <div className="text-center sm:text-left">
               <Reveal>
                 <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                  Tell me about your stack and goals
+                  Tell us about your stack and goals
                 </h2>
                 <p className="mx-auto mt-3 max-w-xl text-zinc-600 sm:mx-0 dark:text-zinc-400">
                   Use the form to share your details and attach a supporting
-                  document—I will follow up by email.
+                  document—We will follow up by email.
                 </p>
               </Reveal>
               <Reveal delayMs={80}>
