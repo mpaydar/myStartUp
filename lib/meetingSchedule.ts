@@ -54,6 +54,50 @@ function formatMeetingTimeLabel(hours: number, minutes: number): string {
   return `${hour12}:${String(minutes).padStart(2, "0")} ${period}`;
 }
 
+export function getLocalDayRange(date: string): { from: Date; to: Date } {
+  return {
+    from: new Date(`${date}T00:00:00`),
+    to: new Date(`${date}T23:59:59.999`),
+  };
+}
+
+export function isMeetingOnLocalDate(meetingAt: Date, date: string): boolean {
+  const [year, month, day] = date.split("-").map(Number);
+  if (!year || !month || !day) return false;
+
+  return (
+    meetingAt.getFullYear() === year &&
+    meetingAt.getMonth() + 1 === month &&
+    meetingAt.getDate() === day
+  );
+}
+
+export function getLocalMeetingTimeValue(meetingAt: Date): string {
+  const hours = meetingAt.getHours();
+  const minutes = meetingAt.getMinutes();
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
+export function getBookedMeetingTimeValuesForDate(
+  date: string,
+  meetingInstants: Date[],
+): string[] {
+  const booked = new Set<string>();
+
+  for (const meetingAt of meetingInstants) {
+    if (!isMeetingOnLocalDate(meetingAt, date)) continue;
+    booked.add(getLocalMeetingTimeValue(meetingAt));
+  }
+
+  return [...booked];
+}
+
+export function isMeetingSlotInPast(date: string, time: string): boolean {
+  const meetingAt = parseLocalMeetingDateTime(date, time);
+  if (!meetingAt) return true;
+  return meetingAt.getTime() < Date.now() - 60_000;
+}
+
 export function getMeetingStartTimeOptions(): MeetingStartTimeOption[] {
   const options: MeetingStartTimeOption[] = [];
   const earliestStart = 8 * 60;

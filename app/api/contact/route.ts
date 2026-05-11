@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { isAllowedContactFileMeta } from "@/lib/contactDocument";
+import { isMeetingSlotBooked } from "@/lib/bookedMeetingSlots";
 import {
   isAllowedMeetingTime,
   MEETING_SCHEDULE_ERROR,
@@ -118,6 +119,13 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "Please choose a meeting time in the future." },
       { status: 400 },
+    );
+  }
+
+  if (await isMeetingSlotBooked(meetingAt)) {
+    return NextResponse.json(
+      { error: "That meeting time was just booked. Please choose another slot." },
+      { status: 409 },
     );
   }
 

@@ -2,8 +2,11 @@
 
 import { MAX_CONTACT_FILE_BYTES } from "@/lib/contactDocument";
 import {
+  getBookedMeetingTimeValuesForDate,
+  getLocalDayRange,
   getMeetingStartTimeOptions,
   isAllowedMeetingTime,
+  isMeetingSlotInPast,
   MEETING_SCHEDULE_ERROR,
   parseLocalMeetingDateTime,
 } from "@/lib/meetingSchedule";
@@ -47,6 +50,10 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
   const [fileName, setFileName] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [messageLength, setMessageLength] = useState(0);
+  const [meetingDate, setMeetingDate] = useState("");
+  const [meetingTime, setMeetingTime] = useState("");
+  const [bookedMeetingTimes, setBookedMeetingTimes] = useState<string[]>([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
   const minDate = useSyncExternalStore(
     subscribeMinDate,
     getMinDateSnapshot,
@@ -65,6 +72,74 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
       // Domain or network issues surface on submit with a user-facing message.
     });
   }, [recaptchaSiteKey]);
+
+  useEffect(() => {
+    if (!meetingDate) {
+      setBookedMeetingTimes([]);
+      setSlotsLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const { from, to } = getLocalDayRange(meetingDate);
+
+    setSlotsLoading(true);
+    void (async () => {
+      try {
+        const params = new URLSearchParams({
+          from: from.toISOString(),
+          to: to.toISOString(),
+        });
+        const res = await fetch(`/api/contact/meeting-slots?${params.toString()}`, {
+          signal: controller.signal,
+        });
+        const data = (await res.json().catch(() => ({}))) as {
+          meetingAt?: string[];
+          error?: string;
+        };
+
+        if (!res.ok) {
+          throw new Error(data.error ?? "Could not load meeting availability.");
+        }
+
+        const booked = getBookedMeetingTimeValuesForDate(
+          meetingDate,
+          (data.meetingAt ?? []).map((value) => new Date(value)),
+        );
+        setBookedMeetingTimes(booked);
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        setBookedMeetingTimes([]);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Could not load meeting availability.",
+        );
+        setStatus("error");
+      } finally {
+        if (!controller.signal.aborted) {
+          setSlotsLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      controller.abort();
+    };
+  }, [meetingDate]);
+
+  const availableMeetingTimeOptions = meetingStartTimeOptions.filter((slot) => {
+    if (bookedMeetingTimes.includes(slot.value)) return false;
+    if (!meetingDate) return true;
+    return !isMeetingSlotInPast(meetingDate, slot.value);
+  });
+
+  useEffect(() => {
+    if (!meetingTime) return;
+    if (!availableMeetingTimeOptions.some((slot) => slot.value === meetingTime)) {
+      setMeetingTime("");
+    }
+  }, [availableMeetingTimeOptions, meetingTime]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -106,11 +181,6 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
       return;
     }
 
-    const meetingDate = String(fd.get("meetingDate") ?? "").trim();
-    const meetingTime = String(fd.get("meetingTime") ?? "").trim();
-    fd.delete("meetingDate");
-    fd.delete("meetingTime");
-
     if (!meetingDate || !meetingTime) {
       setError("Please choose a date and time for your meeting.");
       setStatus("error");
@@ -119,6 +189,18 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
 
     if (!isAllowedMeetingTime(meetingTime)) {
       setError(MEETING_SCHEDULE_ERROR);
+      setStatus("error");
+      return;
+    }
+
+    if (bookedMeetingTimes.includes(meetingTime)) {
+      setError("That meeting time is no longer available. Please choose another slot.");
+      setStatus("error");
+      return;
+    }
+
+    if (isMeetingSlotInPast(meetingDate, meetingTime)) {
+      setError("Please choose a meeting time in the future.");
       setStatus("error");
       return;
     }
@@ -260,6 +342,9 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
       form.reset();
       setFileName(null);
       setMessageLength(0);
+      setMeetingDate("");
+      setMeetingTime("");
+      setBookedMeetingTimes([]);
     } catch {
       setError("Network error. Check your connection and try again.");
       setStatus("error");
@@ -374,6 +459,11 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
               type="date"
               required
               min={minDate || undefined}
+              value={meetingDate}
+              onChange={(e) => {
+                setMeetingDate(e.target.value);
+                setMeetingTime("");
+              }}
               className={`${fieldClass} min-h-[3rem] cursor-pointer [color-scheme:light] dark:[color-scheme:dark]`}
             />
           </div>
@@ -388,13 +478,21 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
               id="meetingTime"
               name="meetingTime"
               required
-              defaultValue=""
-              className={`${fieldClass} min-h-[3rem] cursor-pointer`}
+              value={meetingTime}
+              disabled={!meetingDate || slotsLoading}
+              onChange={(e) => setMeetingTime(e.target.value)}
+              className={`${fieldClass} min-h-[3rem] cursor-pointer disabled:cursor-not-allowed disabled:opacity-60`}
             >
               <option value="" disabled>
-                Select a 30-minute slot
+                {slotsLoading
+                  ? "Loading available slots…"
+                  : meetingDate
+                    ? availableMeetingTimeOptions.length > 0
+                      ? "Select a 30-minute slot"
+                      : "No slots available for this date"
+                    : "Choose a date first"}
               </option>
-              {meetingStartTimeOptions.map((slot) => (
+              {availableMeetingTimeOptions.map((slot) => (
                 <option key={slot.value} value={slot.value}>
                   {slot.label}
                 </option>
@@ -402,6 +500,11 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
             </select>
           </div>
         </div>
+        {meetingDate && !slotsLoading && availableMeetingTimeOptions.length === 0 ? (
+          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+            All 30-minute slots are booked for this date. Try another day.
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-2">
