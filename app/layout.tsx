@@ -16,7 +16,12 @@ export const metadata: Metadata = {
   title: "SimBay AI — Secure, cost-efficient AI infrastructure",
   description:
     "Architecting secure, cost-efficient AI infrastructure: high-velocity data pipelines, ML deployment, autonomous agent tuning, and AI gateways with privacy controls and policy enforcement (HIPAA/GDPR) plus tokenization optimization to reduce operational spend.",
+    verification: {
+      google: "PzP1KnZNQqKnlPiBf86EqoyfHQahhM7kl2RH7D4Uakc",
+    },
 };
+
+
 
 export default function RootLayout({
   children,
