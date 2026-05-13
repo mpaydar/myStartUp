@@ -39,6 +39,25 @@ const fieldClass =
 const textAreaClass = `${fieldClass} min-h-[11rem] resize-y py-4 leading-relaxed`;
 const meetingStartTimeOptions = getMeetingStartTimeOptions();
 
+const SERVICE_INTERESTS = [
+  {
+    id: "simbay_platform",
+    label: "SimBay — Google reviews, CRM, insights & social",
+  },
+  {
+    id: "form_crm_design",
+    label: "Form or CRM design",
+  },
+  {
+    id: "landing_new",
+    label: "New landing page for my business",
+  },
+  {
+    id: "landing_modernize",
+    label: "Modernize my existing site or landing page",
+  },
+] as const;
+
 type ContactFormProps = {
   recaptchaSiteKey: string | null;
 };
@@ -54,6 +73,9 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
   const [meetingTime, setMeetingTime] = useState("");
   const [bookedMeetingTimes, setBookedMeetingTimes] = useState<string[]>([]);
   const [slotsLoading, setSlotsLoading] = useState(false);
+  const [selectedInterests, setSelectedInterests] = useState<Set<string>>(
+    () => new Set(),
+  );
   const minDate = useSyncExternalStore(
     subscribeMinDate,
     getMinDateSnapshot,
@@ -173,9 +195,23 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
       return;
     }
 
-    if (message.length > MAX_MESSAGE_LENGTH) {
+    if (selectedInterests.size === 0) {
       setError(
-        `Your description is too long (max ${MAX_MESSAGE_LENGTH} characters).`,
+        "Please select at least one topic below (for example SimBay, form/CRM design, or a landing page).",
+      );
+      setStatus("error");
+      return;
+    }
+
+    const interestLines = Array.from(selectedInterests)
+      .map((id) => SERVICE_INTERESTS.find((o) => o.id === id)?.label)
+      .filter(Boolean)
+      .map((label) => `- ${label}`);
+    const messageWithInterests = `What they want to discuss:\n${interestLines.join("\n")}\n\n---\n\n${message}`;
+
+    if (messageWithInterests.length > MAX_MESSAGE_LENGTH) {
+      setError(
+        `Your message is too long with the topics included (max ${MAX_MESSAGE_LENGTH} characters). Shorten the text above or pick fewer topics.`,
       );
       setStatus("error");
       return;
@@ -206,13 +242,8 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
     }
 
     const doc = inputRef.current?.files?.[0];
-    if (!(doc instanceof File) || doc.size === 0) {
-      setError("Please attach a supporting document.");
-      setStatus("error");
-      return;
-    }
-
-    if (doc.size > MAX_CONTACT_FILE_BYTES) {
+    const hasDoc = doc instanceof File && doc.size > 0;
+    if (hasDoc && doc.size > MAX_CONTACT_FILE_BYTES) {
       setError("File is too large (max 15 MB).");
       setStatus("error");
       return;
@@ -240,85 +271,86 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
       return;
     }
 
-    let uploadRecaptchaToken: string;
+    fd.delete("document");
+
+    if (hasDoc) {
+      try {
+        const uploadRecaptchaToken = await executeRecaptchaV3(recaptchaSiteKey);
+        const uploadUrlRes = await fetch("/api/contact/upload-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            recaptchaToken: uploadRecaptchaToken,
+            fileName: doc.name,
+            fileSize: doc.size,
+            contentType: doc.type || null,
+          }),
+        });
+        const uploadUrlData = (await uploadUrlRes.json().catch(() => ({}))) as {
+          error?: string;
+          uploadUrl?: string;
+          blobUrl?: string;
+          blobName?: string;
+          contentType?: string;
+        };
+
+        if (
+          !uploadUrlRes.ok ||
+          !uploadUrlData.uploadUrl ||
+          !uploadUrlData.blobUrl ||
+          !uploadUrlData.blobName ||
+          !uploadUrlData.contentType
+        ) {
+          setError(
+            uploadUrlData.error ??
+              "Could not prepare file upload. Please try again.",
+          );
+          setStatus("error");
+          return;
+        }
+
+        const uploadRes = await fetch(uploadUrlData.uploadUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": uploadUrlData.contentType,
+            "x-ms-blob-type": "BlockBlob",
+          },
+          body: doc,
+        });
+
+        if (!uploadRes.ok) {
+          setError(
+            "Could not upload your document to Azure. Check storage CORS and try again.",
+          );
+          setStatus("error");
+          return;
+        }
+
+        fd.append("fileName", doc.name);
+        fd.append("fileBlobUrl", uploadUrlData.blobUrl);
+        fd.append("fileBlobName", uploadUrlData.blobName);
+        fd.append("fileMimeType", doc.type || "");
+        fd.append("fileSize", String(doc.size));
+      } catch {
+        setError("Network error. Check your connection and try again.");
+        setStatus("error");
+        return;
+      }
+    }
+
+    let submitRecaptchaToken: string;
     try {
-      uploadRecaptchaToken = await executeRecaptchaV3(recaptchaSiteKey);
+      submitRecaptchaToken = await executeRecaptchaV3(recaptchaSiteKey);
     } catch {
       setError("Could not verify reCAPTCHA. Please try again.");
       setStatus("error");
       return;
     }
 
-    fd.delete("document");
+    fd.append("recaptchaToken", submitRecaptchaToken);
+    fd.set("message", messageWithInterests);
 
     try {
-      const uploadUrlRes = await fetch("/api/contact/upload-url", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          recaptchaToken: uploadRecaptchaToken,
-          fileName: doc.name,
-          fileSize: doc.size,
-          contentType: doc.type || null,
-        }),
-      });
-      const uploadUrlData = (await uploadUrlRes.json().catch(() => ({}))) as {
-        error?: string;
-        uploadUrl?: string;
-        blobUrl?: string;
-        blobName?: string;
-        contentType?: string;
-      };
-
-      if (
-        !uploadUrlRes.ok ||
-        !uploadUrlData.uploadUrl ||
-        !uploadUrlData.blobUrl ||
-        !uploadUrlData.blobName ||
-        !uploadUrlData.contentType
-      ) {
-        setError(
-          uploadUrlData.error ??
-            "Could not prepare file upload. Please try again.",
-        );
-        setStatus("error");
-        return;
-      }
-
-      const uploadRes = await fetch(uploadUrlData.uploadUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": uploadUrlData.contentType,
-          "x-ms-blob-type": "BlockBlob",
-        },
-        body: doc,
-      });
-
-      if (!uploadRes.ok) {
-        setError(
-          "Could not upload your document to Azure. Check storage CORS and try again.",
-        );
-        setStatus("error");
-        return;
-      }
-
-      fd.append("fileName", doc.name);
-      fd.append("fileBlobUrl", uploadUrlData.blobUrl);
-      fd.append("fileBlobName", uploadUrlData.blobName);
-      fd.append("fileMimeType", doc.type || "");
-      fd.append("fileSize", String(doc.size));
-
-      let submitRecaptchaToken: string;
-      try {
-        submitRecaptchaToken = await executeRecaptchaV3(recaptchaSiteKey);
-      } catch {
-        setError("Could not verify reCAPTCHA. Please try again.");
-        setStatus("error");
-        return;
-      }
-
-      fd.append("recaptchaToken", submitRecaptchaToken);
-
       const res = await fetch("/api/contact", {
         method: "POST",
         body: fd,
@@ -345,6 +377,7 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
       setMeetingDate("");
       setMeetingTime("");
       setBookedMeetingTimes([]);
+      setSelectedInterests(new Set());
     } catch {
       setError("Network error. Check your connection and try again.");
       setStatus("error");
@@ -408,16 +441,63 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
         />
       </div>
 
+      <fieldset className="rounded-2xl border border-zinc-200/90 bg-white/70 p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/40 sm:p-7">
+        <legend className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          What would you like to talk about?
+        </legend>
+        <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+          SimBay covers automated reviews and CRM. I also take on{" "}
+          <strong className="font-medium text-zinc-800 dark:text-zinc-200">
+            form and CRM design
+          </strong>{" "}
+          projects, and I can build a{" "}
+          <strong className="font-medium text-zinc-800 dark:text-zinc-200">
+            new landing page
+          </strong>{" "}
+          or{" "}
+          <strong className="font-medium text-zinc-800 dark:text-zinc-200">
+            refresh your current site
+          </strong>{" "}
+          so it looks more modern—pick anything that applies (one or more).
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {SERVICE_INTERESTS.map((item) => {
+            const on = selectedInterests.has(item.id);
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => {
+                  setSelectedInterests((prev) => {
+                    const next = new Set(prev);
+                    if (next.has(item.id)) next.delete(item.id);
+                    else next.add(item.id);
+                    return next;
+                  });
+                }}
+                className={`rounded-full border px-4 py-2.5 text-left text-sm font-medium transition-[border-color,background-color,color,box-shadow] ${
+                  on
+                    ? "border-teal-600 bg-teal-600 text-white shadow-sm dark:border-teal-500 dark:bg-teal-600"
+                    : "border-zinc-300 bg-white text-zinc-800 hover:border-teal-400 hover:bg-teal-50/80 dark:border-zinc-600 dark:bg-zinc-900/80 dark:text-zinc-100 dark:hover:border-teal-600 dark:hover:bg-teal-950/30"
+                }`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
+
       <div className="rounded-2xl border border-zinc-200/90 bg-white/70 p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/40 sm:p-7">
         <label
           htmlFor="message"
           className="text-base font-semibold text-zinc-900 dark:text-zinc-50"
         >
-          What do you need help with?
+          Tell me more
         </label>
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Goals, stack, timeline, compliance needs, or anything that helps us
-          prepare for your call.
+          Goals, timeline, current tools, or a link to your site—anything that
+          helps me prepare for your call.
         </p>
         <textarea
           id="message"
@@ -425,7 +505,7 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
           required
           rows={6}
           maxLength={MAX_MESSAGE_LENGTH}
-          placeholder="Example: We need an AI gateway in front of our internal APIs, with HIPAA-aware logging and lower LLM spend. We are on AWS and want a phased rollout over the next quarter."
+          placeholder="Example: We run a salon in Jersey City and want more Google reviews. We also need a cleaner booking form and a one-page site that matches our brand."
           className={`${textAreaClass} mt-4`}
           onChange={(e) => setMessageLength(e.target.value.length)}
         />
@@ -512,19 +592,22 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
           id="document-label"
           className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
         >
-          Supporting document
+          Supporting document{" "}
+          <span className="font-normal text-zinc-500 dark:text-zinc-400">
+            (optional)
+          </span>
         </span>
         <p className="text-xs text-zinc-500 dark:text-zinc-500">
-          Brief, RFP, architecture sketch, or requirements—PDF, Word, text, or
-          image up to 15 MB. Files upload directly to your Azure Blob container;
-          the form only sends the blob link to the server.
+          If you have a brief, RFP, sitemap, brand PDF, or a screenshot of the page
+          you want improved—PDF, Word, text, or image up to 15 MB. Skip this if
+          you already explained everything above; files upload to Azure and only
+          the blob link is sent with your request.
         </p>
         <input
           ref={inputRef}
           id="document"
           name="document"
           type="file"
-          required
           className="sr-only"
           accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,.webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,image/png,image/jpeg,image/webp"
           onChange={(e) => onFile(e.target.files?.[0])}
@@ -557,7 +640,9 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
           aria-labelledby="document-label"
         >
           <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
-            {fileName ? fileName : "Drop a file here or click to browse"}
+            {fileName
+              ? fileName
+              : "Drop a file here or click to browse (optional)"}
           </span>
           <span className="mt-1 text-xs text-zinc-500 dark:text-zinc-500">
             PDF · DOC/DOCX · TXT · PNG · JPEG · WebP

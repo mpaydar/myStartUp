@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SimBay AI — Secure, cost-efficient AI infrastructure",
+  title: "SimBay AI — Google review management for NJ & NY",
   description:
-    "Architecting secure, cost-efficient AI infrastructure: high-velocity data pipelines, ML deployment, autonomous agent tuning, and AI gateways with privacy controls and policy enforcement (HIPAA/GDPR) plus tokenization optimization to reduce operational spend.",
+    "Automated Google review requests, monitoring, and responses for local businesses in New Jersey and New York. Simple pricing, no long contracts.",
     verification: {
       google: "PzP1KnZNQqKnlPiBf86EqoyfHQahhM7kl2RH7D4Uakc",
     },

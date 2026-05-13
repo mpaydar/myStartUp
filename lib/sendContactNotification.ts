@@ -34,8 +34,8 @@ export async function sendContactSubmissionEmail(options: {
   email: string;
   message: string;
   meetingAt: Date;
-  fileName: string;
-  fileBlobUrl: string;
+  fileName: string | null;
+  fileBlobUrl: string | null;
 }): Promise<void> {
   const resend = new Resend(options.apiKey);
   const meetingLabel = options.meetingAt.toLocaleString("en-US", {
@@ -43,9 +43,18 @@ export async function sendContactSubmissionEmail(options: {
     timeStyle: "short",
   });
 
-  const href = encodeURI(options.fileBlobUrl);
-
   const fullName = `${options.firstName} ${options.lastName}`.trim();
+
+  const fileSection =
+    options.fileName && options.fileBlobUrl
+      ? (() => {
+          const href = encodeURI(options.fileBlobUrl);
+          return `
+      <p><strong>Supporting file name:</strong> ${escapeHtml(options.fileName)}</p>
+      <p><strong>File in Azure Blob:</strong> <a href="${href}">${escapeHtml(options.fileBlobUrl)}</a></p>
+      <p><em>Open the link above to download the uploaded document from Azure Blob Storage.</em></p>`;
+        })()
+      : `<p><em>No supporting file was attached.</em></p>`;
 
   const { error } = await resend.emails.send({
     from: options.from,
@@ -59,9 +68,7 @@ export async function sendContactSubmissionEmail(options: {
       <p><strong>Requested meeting:</strong> ${escapeHtml(meetingLabel)}</p>
       <p><strong>What they need:</strong></p>
       <p style="white-space:pre-wrap">${escapeHtml(options.message)}</p>
-      <p><strong>Supporting file name:</strong> ${escapeHtml(options.fileName)}</p>
-      <p><strong>File in Azure Blob:</strong> <a href="${href}">${escapeHtml(options.fileBlobUrl)}</a></p>
-      <p><em>Open the link above to download the uploaded document from Azure Blob Storage.</em></p>
+      ${fileSection}
     `,
   });
 

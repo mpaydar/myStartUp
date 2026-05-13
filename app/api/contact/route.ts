@@ -61,7 +61,11 @@ export async function POST(request: Request) {
   const fileBlobName = String(formData.get("fileBlobName") ?? "").trim();
   const fileMimeTypeRaw = String(formData.get("fileMimeType") ?? "").trim();
   const fileMimeType = fileMimeTypeRaw || null;
-  const fileSize = Number(formData.get("fileSize"));
+  const fileSizeRaw = formData.get("fileSize");
+  const fileSizeParsed =
+    fileSizeRaw === null || fileSizeRaw === undefined || String(fileSizeRaw) === ""
+      ? NaN
+      : Number(fileSizeRaw);
 
   if (!firstName || !lastName) {
     return NextResponse.json(
@@ -129,52 +133,70 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!fileName || !fileBlobUrl || !fileBlobName || !Number.isFinite(fileSize)) {
-    return NextResponse.json(
-      { error: "Please attach a supporting document." },
-      { status: 400 },
-    );
-  }
+  const hasAllFileParts =
+    Boolean(fileName) &&
+    Boolean(fileBlobUrl) &&
+    Boolean(fileBlobName) &&
+    Number.isFinite(fileSizeParsed) &&
+    fileSizeParsed > 0;
 
-  if (
-    !isAllowedContactFileMeta({
-      fileName,
-      fileSize,
-      contentType: fileMimeType,
-    })
-  ) {
+  const hasAnyFilePart =
+    Boolean(fileName) ||
+    Boolean(fileBlobUrl) ||
+    Boolean(fileBlobName) ||
+    (Number.isFinite(fileSizeParsed) && fileSizeParsed > 0);
+
+  if (hasAnyFilePart && !hasAllFileParts) {
     return NextResponse.json(
       {
         error:
-          "Unsupported file type. Use PDF, Word, plain text, or an image (PNG, JPEG, WebP).",
+          "File upload was incomplete. Remove the file or finish uploading it.",
       },
       { status: 400 },
     );
   }
 
-  if (!isAzureBlobConfigured()) {
-    console.error(
-      "Azure storage not configured: set AZURE_STORAGE_CONNECTION_STRING, or AZURE_STORAGE_ACCOUNT_NAME + azure_secret_key (account key).",
-    );
-    return NextResponse.json(
-      {
-        error:
-          "File storage is not configured. Set AZURE_STORAGE_CONNECTION_STRING or AZURE_STORAGE_ACCOUNT_NAME + azure_secret_key.",
-      },
-      { status: 503 },
-    );
-  }
+  if (hasAllFileParts) {
+    if (
+      !isAllowedContactFileMeta({
+        fileName,
+        fileSize: fileSizeParsed,
+        contentType: fileMimeType,
+      })
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Unsupported file type. Use PDF, Word, plain text, or an image (PNG, JPEG, WebP).",
+        },
+        { status: 400 },
+      );
+    }
 
-  if (
-    !isAllowedContactBlobReference({
-      blobUrl: fileBlobUrl,
-      blobName: fileBlobName,
-    })
-  ) {
-    return NextResponse.json(
-      { error: "Invalid file reference for this submission." },
-      { status: 400 },
-    );
+    if (!isAzureBlobConfigured()) {
+      console.error(
+        "Azure storage not configured: set AZURE_STORAGE_CONNECTION_STRING, or AZURE_STORAGE_ACCOUNT_NAME + azure_secret_key (account key).",
+      );
+      return NextResponse.json(
+        {
+          error:
+            "File storage is not configured. Remove the attachment or set AZURE_STORAGE_CONNECTION_STRING (or account name + key).",
+        },
+        { status: 503 },
+      );
+    }
+
+    if (
+      !isAllowedContactBlobReference({
+        blobUrl: fileBlobUrl,
+        blobName: fileBlobName,
+      })
+    ) {
+      return NextResponse.json(
+        { error: "Invalid file reference for this submission." },
+        { status: 400 },
+      );
+    }
   }
 
   if (!process.env.DATABASE_URL) {
@@ -208,6 +230,11 @@ export async function POST(request: Request) {
     );
   }
 
+  const fileNameDb = hasAllFileParts ? fileName : null;
+  const fileMimeTypeDb = hasAllFileParts ? fileMimeType : null;
+  const fileSizeDb = hasAllFileParts ? fileSizeParsed : null;
+  const fileBlobUrlDb = hasAllFileParts ? fileBlobUrl : null;
+
   try {
     await getPrisma().contactRequest.create({
       data: {
@@ -216,10 +243,10 @@ export async function POST(request: Request) {
         email,
         message,
         meetingAt,
-        fileName,
-        fileMimeType,
-        fileSize,
-        fileBlobUrl,
+        fileName: fileNameDb,
+        fileMimeType: fileMimeTypeDb,
+        fileSize: fileSizeDb,
+        fileBlobUrl: fileBlobUrlDb,
       },
     });
   } catch (err) {
@@ -241,19 +268,18 @@ export async function POST(request: Request) {
       email,
       message,
       meetingAt,
-      fileName,
-      fileBlobUrl,
+      fileName: fileNameDb,
+      fileBlobUrl: fileBlobUrlDb,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
-    console.error("Resend notification failed (blob + DB already saved):", err);
+    console.error("Resend notification failed (DB already saved):", err);
     return NextResponse.json(
       {
         ok: false,
         emailSent: false,
-        storageSaved: true,
         databaseSaved: true,
-        error: `Your file was saved to Azure and the request was recorded, but the notification email failed: ${msg}`,
+        error: `Your request was recorded, but the notification email failed: ${msg}`,
       },
       { status: 502 },
     );
@@ -262,7 +288,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     ok: true,
     emailSent: true,
-    storageSaved: true,
     message:
       "Your message has been successfully recorded. I will meet with you at the time you selected and follow up by email if anything changes.",
   });

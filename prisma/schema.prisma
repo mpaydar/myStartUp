@@ -14,9 +14,9 @@ model ContactRequest {
   email        String
   message      String?  @db.Text
   meetingAt    DateTime?
-  fileName     String
+  fileName     String?
   fileMimeType String?
-  fileSize     Int
+  fileSize     Int?
   fileBlobUrl  String?
   createdAt    DateTime @default(now())
 

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function SiteHeader() {
@@ -6,34 +7,47 @@ export function SiteHeader() {
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
-          className="text-sm font-semibold tracking-tight text-zinc-900 transition-transform duration-300 hover:scale-[1.02] dark:text-zinc-50"
+          className="transition-transform duration-300 hover:scale-[1.02]"
         >
-          SimBay AI
+          <Image
+            src="/simbay-ai-logo.png"
+            alt="SimBay AI"
+            width={160}
+            height={160}
+            className="h-10 w-auto rounded-md"
+            priority
+          />
         </Link>
-        <nav className="flex flex-wrap items-center justify-end gap-x-5 gap-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <nav className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 text-xs text-zinc-600 sm:gap-x-4 sm:text-sm dark:text-zinc-400">
           <Link
-            href="/#services"
+            href="/#reviews"
             className="transition-colors hover:text-teal-600 dark:hover:text-teal-400"
           >
-            Services
+            Reviews
           </Link>
           <Link
-            href="/#free-prototyping"
+            href="/#crm"
             className="transition-colors hover:text-teal-600 dark:hover:text-teal-400"
           >
-            Free prototype
+            CRM
           </Link>
           <Link
-            href="/#ai-gateway"
+            href="/#insights"
             className="transition-colors hover:text-teal-600 dark:hover:text-teal-400"
           >
-            AI gateway
+            Insights
+          </Link>
+          <Link
+            href="/#social"
+            className="transition-colors hover:text-teal-600 dark:hover:text-teal-400"
+          >
+            Social
           </Link>
           <Link
             href="/get_in_touch"
             className="rounded-full bg-zinc-900 px-4 py-1.5 font-medium text-white transition-transform duration-200 hover:scale-[1.03] hover:bg-zinc-800 active:scale-[0.98] dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
           >
-            Get in touch
+            Contact us
           </Link>
         </nav>
       </div>

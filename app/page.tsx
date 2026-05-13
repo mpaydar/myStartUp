@@ -1,109 +1,56 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
 
+import { serviceAreaLine, siteMarketing } from "@/lib/siteMarketing";
+import { featureSectionImages } from "@/lib/featureSectionImages";
+import { CrmLiveDemoModal } from "./components/home/CrmLiveDemoModal";
+import { FeaturePillarSection } from "./components/home/FeaturePillarSection";
+import { HeroEngagement } from "./components/home/HeroEngagement";
+import { PricingTierCards } from "./components/home/PricingTierCards";
+import { ReviewMetrics } from "./components/home/ReviewMetrics";
+import { StepExplorer } from "./components/home/StepExplorer";
 import { Reveal } from "./components/Reveal";
 import { SiteHeader } from "./components/SiteHeader";
 
-const services = [
-  {
-    title: "Cloud consultation",
-    description:
-      "Architecture and operations guidance across AWS and server environments—networking, security baselines, cost control, and patterns that scale with your workload.",
-    icon: "☁",
-    imageSrc:
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Global cloud network over planet earth at night",
-  },
-  {
-    title: "Data pipelining & ML model development",
-    description:
-      "ETL/ELT pipelines, feature-ready data layers, and model development workflows so analytics and ML stay reliable, observable, and reproducible.",
-    icon: "⇄",
-    imageSrc:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Data dashboard with charts and pipeline-like flows",
-  },
-  {
-    title: "Automation",
-    description:
-      "End-to-end automation of repetitive workflows—integrations, orchestration, and guardrails so teams spend less time on manual ops and more on outcomes.",
-    icon: "⟲",
-    imageSrc:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Developer workspace with laptop and connected workflow tools",
-  },
-  {
-    title: "AI agent development",
-    description:
-      "Agents grounded in your tools and data: planning, retrieval, structured outputs, and human-in-the-loop where risk or compliance requires it.",
-    icon: "◆",
-    imageSrc:
-      "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Abstract visualization suggesting AI and neural networks",
-  },
-  {
-    title: "Tuning of agents",
-    description:
-      "Prompt and tool design, evaluation loops, latency and quality tradeoffs, and operational tuning so agents behave consistently in production.",
-    icon: "⌁",
-    imageSrc:
-      "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Programming workspace with code on screen",
-  },
-  {
-    title: "AI gateway design",
-    description:
-      "Gateways that tie policy to execution: IAM, privacy controls for sensitive data, and alignment with HIPAA, GDPR, CCPA/CPRA, and FERPA expectations—plus LLM tokenization and cost reduction.",
-    icon: "▣",
-    imageSrc:
-      "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=640&h=400&fit=crop&q=80",
-    imageAlt: "Abstract technology and secure data flows",
-  },
-];
+const { brand, serviceRegionShort, serviceRegionLong, verticalsTitle, verticalsBody } =
+  siteMarketing;
 
-const credibilityStrip = [
-  {
-    src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=280&fit=crop&q=80",
-    alt: "Product team collaborating at a whiteboard",
-    caption: "Delivery",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=280&fit=crop&q=80",
-    alt: "Security lock icon concept on laptop",
-    caption: "Security-first",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=280&fit=crop&q=80",
-    alt: "Earth at night from space with city lights",
-    caption: "Global scale",
-  },
-];
+/** Hero badge: "Salons, HVAC & Restaurants" → middle-dot list */
+const heroBadgeVerticals = verticalsTitle.replace(/, /g, " · ").replace(" & ", " · ");
 
-const gatewayCapabilities = [
+export const metadata: Metadata = {
+  title: `Review Management for ${verticalsTitle} in ${serviceRegionLong} | ${brand}`,
+  description: `Automated Google review requests, monitoring, and response for local businesses in ${serviceRegionLong}. Plans from $49/mo. No contracts. Text support.`,
+};
+
+const howItWorks = [
   {
-    title: "Policy & IAM",
-    body: "Enforce who can call what, with audit trails and tenant boundaries so AI behavior matches internal and regulatory policy.",
+    step: "1",
+    title: "Customer visits → review SMS",
+    body: "An automatic text goes out asking for a Google review while the experience is still fresh—simple for them, zero extra work for you.",
   },
   {
-    title: "Privacy & sensitive data",
-    body: "Minimize exposure of PHI, student records, and personal data—classification, redaction patterns, and controlled retention in the gateway path.",
+    step: "2",
+    title: "Instant notifications",
+    body: "New reviews notify you immediately—good and bad—so Google review management never turns into a surprise you hear about too late.",
   },
   {
-    title: "Compliance alignment",
-    body: "Design for HIPAA, GDPR, CCPA/CPRA, and FERPA-style requirements as your legal team defines them—not checkbox marketing, but architecture you can defend.",
-  },
-  {
-    title: "Token & cost efficiency",
-    body: "Caching, routing, prompt shaping, and batching at the gateway to cut LLM tokenization and spend without giving up quality.",
+    step: "3",
+    title: "Monthly report",
+    body: "See your rating trend and how many new reviews came in that month—clear proof that automated review requests are moving the needle.",
   },
 ];
 
 export default function Home() {
+  const areaLine = serviceAreaLine();
+  const footerPhone = siteMarketing.phoneDisplay.trim();
+
   return (
     <div className="min-h-full bg-gradient-to-b from-zinc-50 via-white to-zinc-50 text-zinc-900 dark:from-zinc-950 dark:via-zinc-950 dark:to-black dark:text-zinc-100">
       <SiteHeader />
 
       <main>
-        <section className="relative mx-auto max-w-6xl overflow-hidden px-4 pb-20 pt-16 sm:px-6 sm:pt-24">
+        <section className="relative mx-auto max-w-6xl overflow-hidden px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20">
           <div
             className="animate-blob-a pointer-events-none absolute -right-24 top-8 h-72 w-72 rounded-full bg-teal-400/20 blur-3xl dark:bg-teal-500/15"
             aria-hidden
@@ -112,244 +59,372 @@ export default function Home() {
             className="animate-blob-b pointer-events-none absolute -left-20 bottom-0 h-64 w-64 rounded-full bg-violet-400/15 blur-3xl dark:bg-violet-500/10"
             aria-hidden
           />
-          <div className="relative grid gap-12 lg:grid-cols-2 lg:items-center">
-            <div>
-              <p className="animate-hero-in mb-4 inline-flex items-center rounded-full border border-teal-200/80 bg-teal-50 px-3 py-1 text-xs font-medium text-teal-800 dark:border-teal-900/60 dark:bg-teal-950/40 dark:text-teal-200">
-                Cloud · Data · Agents · Gateway
+
+          <div className="relative grid items-center gap-12 lg:grid-cols-2 lg:gap-14">
+            <div className="text-center lg:text-left">
+              <p className="animate-hero-in mb-4 inline-flex items-center gap-2 rounded-full border border-zinc-200/90 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-100">
+                <span
+                  className="relative flex h-2 w-2 shrink-0 motion-reduce:animate-none"
+                  aria-hidden
+                >
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/70 motion-reduce:hidden" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-700 dark:bg-emerald-500" />
+                </span>
+                <span className="text-balance">
+                  {serviceRegionShort} · {heroBadgeVerticals}
+                </span>
               </p>
-              <h1 className="animate-hero-in-delay-1 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl sm:leading-[1.1]">
-                Architecting Secure, Cost-Efficient AI Infrastructure.
+              <h1 className="animate-hero-in-delay-1 text-4xl font-semibold tracking-tight text-balance sm:text-5xl sm:leading-[1.12]">
+                <span className="text-zinc-900 dark:text-zinc-50">
+                  More 5-star reviews.
+                </span>{" "}
+                <span className="text-violet-600 dark:text-violet-400">Less work.</span>
               </h1>
-              <p className="animate-hero-in-delay-2 mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-                We move beyond the interface to solve complex backend challenges:
-                high-velocity data pipelines, ML model deployment, and autonomous
-                agent tuning. Our AI gateways integrate rigorous privacy controls
-                and policy enforcement (HIPAA/GDPR) while optimizing tokenization
-                to slash your operational spend.
+              <p className="animate-hero-in-delay-2 mx-auto mt-6 max-w-xl text-lg leading-relaxed text-zinc-600 lg:mx-0 dark:text-zinc-400">
+                We automatically ask your customers for reviews, help them write one in
+                3 taps, and turn every response into a business insight — for a fraction
+                of what Podium charges.
               </p>
-              <p className="animate-hero-in-delay-2 mt-4 max-w-2xl text-base font-semibold leading-relaxed text-zinc-800 dark:text-zinc-200">
-                Let us handle your platform in this AI era with confidence.
-              </p>
-              <p className="animate-hero-in-delay-2 mt-3 inline-flex max-w-2xl items-center rounded-full border border-teal-200/80 bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-800 shadow-sm dark:border-teal-900/60 dark:bg-teal-950/40 dark:text-teal-200">
-                Supporting startups from pre-seed to late stage · Deferred
-                payment available
-              </p>
-
-              <div
-                id="free-prototyping"
-                className="animate-hero-in-delay-3 animate-proto-offer mt-10 scroll-mt-24 rounded-2xl border border-teal-300/60 bg-gradient-to-br from-teal-50/95 via-white to-teal-50/40 p-6 shadow-sm dark:border-teal-800/50 dark:from-teal-950/35 dark:via-zinc-950/80 dark:to-teal-950/20 sm:max-w-xl sm:p-7"
-              >
-                <p className="text-xs font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-300">
-                  Limited offer
-                </p>
-                <h2 className="mt-2 text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-                  Free prototyping session
-                </h2>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                  One working session to clarify goals, sketch architecture, and
-                  outline risks—so you can decide next steps with something
-                  concrete on the table. No obligation.
-                </p>
-                <a
+              <div className="animate-hero-in-delay-3 mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
+                <Link
                   href="/get_in_touch"
-                  className="mt-5 inline-flex h-11 items-center justify-center rounded-full bg-teal-600 px-6 text-sm font-semibold text-white shadow-sm transition-[transform,background-color] duration-200 hover:scale-[1.02] hover:bg-teal-500 active:scale-[0.98]"
+                  className="group inline-flex h-12 min-h-[3rem] flex-1 items-center justify-center rounded-2xl border-2 border-zinc-900 bg-white px-6 text-sm font-semibold text-zinc-900 transition-[transform,background-color,box-shadow] duration-200 hover:bg-zinc-50 hover:shadow-md active:scale-[0.99] dark:border-zinc-100 dark:bg-zinc-950 dark:text-zinc-50 dark:hover:bg-zinc-900 sm:min-w-[11rem] sm:flex-initial"
                 >
-                  Book your free prototype
-                </a>
-              </div>
-
-              <div className="animate-hero-in-delay-4 mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  Book a free demo
+                  <span
+                    className="ml-2 inline-block transition-transform duration-200 group-hover:translate-x-0.5"
+                    aria-hidden
+                  >
+                    →
+                  </span>
+                </Link>
                 <a
-                  href="#services"
-                  className="inline-flex h-12 items-center justify-center rounded-full border border-zinc-300 bg-white px-8 text-sm font-semibold text-zinc-900 transition-[transform,border-color,background-color] duration-200 hover:scale-[1.02] hover:border-zinc-400 hover:bg-zinc-50 active:scale-[0.98] dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
+                  href="/#crm-live-demo"
+                  className="inline-flex h-12 min-h-[3rem] flex-1 items-center justify-center rounded-2xl border-2 border-zinc-900 bg-transparent px-6 text-sm font-semibold text-zinc-900 transition-[transform,background-color,box-shadow] duration-200 hover:bg-zinc-50 hover:shadow-md active:scale-[0.99] dark:border-zinc-100 dark:text-zinc-50 dark:hover:bg-zinc-900 sm:min-w-[11rem] sm:flex-initial"
                 >
-                  Explore services
+                  See how it works
                 </a>
               </div>
-            </div>
-
-            <div className="animate-hero-in-delay-2 relative mx-auto w-full max-w-lg lg:max-w-none">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-zinc-200/80 bg-zinc-100 shadow-2xl shadow-zinc-300/50 ring-1 ring-black/5 dark:border-zinc-700 dark:bg-zinc-900 dark:shadow-black/40">
-                <Image
-                  src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=960&h=720&fit=crop&q=80"
-                  alt="Engineering team collaborating on a product roadmap"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  priority
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-900/40 via-transparent to-transparent dark:from-black/50" />
-                <p className="absolute bottom-4 left-4 right-4 text-sm font-medium text-white drop-shadow-md">
-                  Beyond the interface—pipelines, ML deployment, and governed AI
-                  gateways.
+              <div className="animate-hero-in-delay-4 mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
+                <div className="flex -space-x-2" aria-hidden>
+                  {[
+                    { initials: "MF", className: "bg-rose-500 text-white" },
+                    { initials: "JT", className: "bg-sky-600 text-white" },
+                    { initials: "SK", className: "bg-amber-500 text-zinc-900" },
+                    { initials: "AL", className: "bg-emerald-700 text-white" },
+                  ].map((a) => (
+                    <span
+                      key={a.initials}
+                      className={`inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-white text-xs font-semibold dark:border-zinc-950 ${a.className}`}
+                    >
+                      {a.initials}
+                    </span>
+                  ))}
+                </div>
+                <p className="max-w-xs text-left text-sm leading-snug text-zinc-600 sm:max-w-none dark:text-zinc-400">
+                  Local businesses in {serviceRegionShort} avg{" "}
+                  <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                    4.8 stars
+                  </span>{" "}
+                  ·{" "}
+                  <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                    60–70% review rate
+                  </span>
                 </p>
               </div>
             </div>
+
+            <HeroEngagement regionLabel={serviceRegionShort} />
+          </div>
+
+          <div className="animate-hero-in-delay-4 relative mx-auto mt-14 max-w-6xl border-t border-zinc-200/90 pt-8 dark:border-zinc-800/80">
+            <ul className="flex flex-col items-center justify-center gap-3 text-sm text-zinc-700 sm:flex-row sm:flex-wrap sm:gap-x-8 sm:gap-y-2 dark:text-zinc-300">
+              <li className="flex items-center gap-2">
+                <span className="text-emerald-700 dark:text-emerald-500" aria-hidden>
+                  ✓
+                </span>
+                First month free
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-emerald-700 dark:text-emerald-500" aria-hidden>
+                  ✓
+                </span>
+                No annual contract
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-emerald-700 dark:text-emerald-500" aria-hidden>
+                  ✓
+                </span>
+                Data migration included
+              </li>
+            </ul>
+            <p className="mt-4 flex items-center justify-center gap-2 text-center text-sm text-zinc-700 dark:text-zinc-300">
+              <span className="text-emerald-700 dark:text-emerald-500" aria-hidden>
+                ✓
+              </span>
+              Local developer · text me directly
+            </p>
           </div>
         </section>
 
-        <section className="border-y border-zinc-200/80 bg-white py-12 dark:border-zinc-800/80 dark:bg-zinc-950/40">
-          <div className="mx-auto grid max-w-6xl gap-6 px-4 sm:grid-cols-3 sm:px-6">
-            {credibilityStrip.map((item) => (
-              <figure
-                key={item.caption}
-                className="overflow-hidden rounded-2xl border border-zinc-200/90 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-              >
-                <div className="relative aspect-[5/3]">
-                  <Image
-                    src={item.src}
-                    alt={item.alt}
-                    fill
-                    className="object-cover transition-transform duration-500 hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, 33vw"
-                  />
-                </div>
-                <figcaption className="border-t border-zinc-100 px-4 py-3 text-center text-sm font-semibold text-zinc-800 dark:border-zinc-800 dark:text-zinc-200">
-                  {item.caption}
-                </figcaption>
-              </figure>
-            ))}
+        <FeaturePillarSection
+          id="reviews"
+          image={featureSectionImages.reviews}
+          h2="Stop chasing customers for reviews. Let it happen automatically."
+          subheading="For salons, HVAC, restaurants, and any local business that lives and dies by Google ratings."
+          bullets={[
+            "Customer visits → they get an SMS → AI helps them write a review in 3 taps → posted to Google. Zero effort from you.",
+            "Review rate goes from the industry average of 12% to 60–70% because the hard part (writing) is done for them.",
+            "Bad experiences are caught privately before they become public 1-star reviews.",
+          ]}
+          howItWorksLine="After each visit, an automated SMS is sent with a personalized link. The customer answers 3 quick questions. AI generates a natural review from their answers. They approve and post — all in under 60 seconds."
+          visualSymbol="★"
+          variant="white"
+        />
+
+        <div
+          id="crm-live-demo"
+          className="scroll-mt-20"
+        >
+          <FeaturePillarSection
+            id="crm"
+            image={featureSectionImages.crm}
+            h2="Know your customers. Not just their names — their habits."
+            subheading="A lightweight CRM built specifically for local service businesses — no bloat, no training required."
+            bullets={[
+              "Every customer profile shows visit history, reviews left, photos shared, and credits earned — in one place.",
+              "Automatically flags customers who haven't returned in 60+ days so you can win them back before they're gone.",
+              "Send targeted follow-ups by segment: new customers, regulars, lapsed, or high-spenders — with one click.",
+            ]}
+            howItWorksLine="Every review, visit, photo, and credit transaction feeds into the customer profile automatically. No manual data entry. The CRM builds itself."
+            visualSymbol="◇"
+            reverse
+            variant="muted"
+          />
+        </div>
+
+        <FeaturePillarSection
+          id="insights"
+          image={featureSectionImages.insights}
+          h2="Your reviews are telling you how to run your business. We translate them."
+          subheading="A monthly AI-generated report that reads every review and turns patterns into specific actions."
+          bullets={[
+            "See exactly what customers love (use it in your marketing) and what they complain about (fix it before it costs you).",
+            "Ranked suggested actions each month — not vague tips, but specific moves tied to your actual review data.",
+            "Track your Google rating trend, review volume, and how you compare to local competitors over time.",
+          ]}
+          howItWorksLine="Every review is analyzed by AI each month. Themes are extracted, ranked by frequency, and matched to business actions. Delivered as a clean dashboard and optional PDF report."
+          visualSymbol="⌁"
+          variant="white"
+        />
+
+        <FeaturePillarSection
+          id="social"
+          image={featureSectionImages.social}
+          h2="Turn happy customers into your social media team."
+          subheading="Customers share photos of their experience. You get a ready-to-post content queue for Instagram and Facebook — with their permission."
+          bullets={[
+            "Customers earn credits (redeemable as discounts) for uploading a photo after their visit — so they actually do it.",
+            "Every photo arrives in your dashboard pre-captioned by AI, tagged for Instagram or Facebook, one tap to post.",
+            "Explicit consent is captured and stored per customer — you're always legally covered.",
+          ]}
+          howItWorksLine="After a 4+ star review, customers are invited to add a photo for credits. They choose which platforms they allow. Photos land in your content queue ready to approve and publish — no social media manager needed."
+          visualSymbol="✦"
+          reverse
+          variant="muted"
+        />
+
+        <section
+          id="how-it-works"
+          className="scroll-mt-20 border-y border-zinc-200/80 bg-white py-16 dark:border-zinc-800/80 dark:bg-zinc-950/40 sm:py-20"
+        >
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <Reveal>
+              <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
+                How it works
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-center text-zinc-600 dark:text-zinc-400">
+                Google review management in {serviceRegionShort}, stripped down to what
+                matters—automated review requests for your small business, no
+                bloat.
+              </p>
+              <p className="mx-auto mt-6 max-w-2xl text-center">
+                <a
+                  href="/#crm-live-demo"
+                  className="text-sm font-semibold text-teal-700 underline-offset-4 transition-colors hover:text-teal-600 hover:underline dark:text-teal-400 dark:hover:text-teal-300"
+                >
+                  Open the interactive CRM live demo
+                </a>
+              </p>
+            </Reveal>
+            <StepExplorer steps={howItWorks} />
           </div>
         </section>
 
         <section
-          id="services"
-          className="border-y border-zinc-200/80 bg-white/60 py-20 dark:border-zinc-800/80 dark:bg-zinc-900/20"
+          id="results"
+          className="scroll-mt-20 py-16 sm:py-20"
         >
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
             <Reveal>
               <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                Where I focus
+                Results
               </h2>
-              <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-400">
-                No standalone web-application builds—targeted work on cloud,
-                pipelines, automation, agents, gateway design, and responsible
-                use of sensitive data.
+              <p className="mx-auto mt-3 max-w-lg text-sm text-zinc-600 dark:text-zinc-400">
+                Typical lift when automated requests run consistently alongside great
+                service.
               </p>
+              <ReviewMetrics
+                startCount={siteMarketing.resultsStartCount}
+                endCount={siteMarketing.resultsEndCount}
+                days={siteMarketing.resultsDays}
+              />
+              <figure className="mt-6 rounded-2xl border border-teal-200/80 bg-teal-50/60 px-6 py-8 dark:border-teal-900/50 dark:bg-teal-950/30 sm:px-10">
+                <blockquote className="text-lg font-medium leading-snug text-zinc-900 dark:text-zinc-100 sm:text-xl">
+                  &ldquo;{siteMarketing.resultsQuote}&rdquo;
+                </blockquote>
+                <figcaption className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
+                  {siteMarketing.resultsAttribution}
+                </figcaption>
+              </figure>
             </Reveal>
-            <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {services.map((item, index) => (
-                <li key={item.title} className="min-h-0">
-                  <Reveal delayMs={index * 70} className="block h-full">
-                    <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200/90 bg-white shadow-sm transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-950/80">
-                      <div className="relative aspect-[16/10] shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-900">
-                        <Image
-                          src={item.imageSrc}
-                          alt={item.imageAlt}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        />
-                      </div>
-                      <div className="flex flex-1 flex-col p-6">
-                        <span
-                          className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-lg text-teal-700 transition-transform duration-300 group-hover:scale-110 dark:bg-teal-950/50 dark:text-teal-300"
-                          aria-hidden
-                        >
-                          {item.icon}
-                        </span>
-                        <h3 className="text-lg font-semibold">{item.title}</h3>
-                        <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                  </Reveal>
-                </li>
-              ))}
-            </ul>
           </div>
         </section>
 
-        <section id="ai-gateway" className="py-20">
+        <section
+          id="pricing"
+          className="scroll-mt-20 border-y border-zinc-200/80 bg-white py-16 dark:border-zinc-800/80 dark:bg-zinc-950/30 sm:py-20"
+        >
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <Reveal>
-              <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-900 text-white shadow-xl dark:border-zinc-800">
-                <div className="grid lg:grid-cols-2">
-                  <div className="relative min-h-[280px] lg:min-h-[420px]">
-                    <Image
-                      src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=900&h=700&fit=crop&q=80"
-                      alt="Abstract technology and data flows"
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 1024px) 100vw, 50vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-zinc-900/20 to-zinc-900/90 lg:via-zinc-900/40" />
-                  </div>
-                  <div className="flex flex-col justify-center bg-gradient-to-br from-teal-700 via-teal-800 to-zinc-950 p-8 sm:p-12">
-                    <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                      AI gateway: policy, privacy, and industrial-grade guardrails
-                    </h2>
-                    <p className="mt-4 max-w-xl text-teal-100">
-                      From integrating corporate policy to handling sensitive data
-                      in line with HIPAA, GDPR, CCPA/CPRA, and FERPA expectations—your
-                      gateway is where access, logging, and token-efficient routing
-                      come together.
-                    </p>
-                    <ul className="mt-10 grid gap-4 sm:grid-cols-2">
-                      {gatewayCapabilities.map((cap) => (
-                        <li
-                          key={cap.title}
-                          className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm transition-[transform,background-color] duration-300 hover:-translate-y-0.5 hover:bg-white/15"
-                        >
-                          <h3 className="font-semibold">{cap.title}</h3>
-                          <p className="mt-2 text-xs leading-relaxed text-teal-50/90 sm:text-sm">
-                            {cap.body}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+              <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
+                Pricing
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                Pick the depth you need. Upgrade when you want CRM, insights, or social
+                on autopilot—all with local support in {serviceRegionShort}.
+              </p>
+
+              <PricingTierCards />
+
+              <div className="mt-10 flex flex-col gap-3 rounded-2xl border border-emerald-200/90 bg-emerald-50/90 px-4 py-4 text-sm leading-relaxed text-emerald-950 shadow-sm dark:border-emerald-900/50 dark:bg-emerald-950/35 dark:text-emerald-100 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-200/80 text-lg dark:bg-emerald-900/60"
+                  aria-hidden
+                >
+                  🐷
+                </span>
+                <p>
+                  <strong className="font-semibold">Pro plan saves you $200+/month vs Podium</strong>{" "}
+                  — $100+/month vs Birdeye — with local support included.
+                </p>
+              </div>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                <div className="rounded-2xl border-2 border-teal-500 bg-teal-50/40 p-4 text-center shadow-sm dark:border-teal-500 dark:bg-teal-950/30">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-teal-800 dark:text-teal-200">
+                    {brand} (Pro)
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+                    $199<span className="text-sm font-normal text-zinc-500">/mo</span>
+                  </p>
+                  <p className="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+                    Reviews + CRM + insights + social
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-4 text-center dark:border-zinc-800 dark:bg-zinc-900/50">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                    Podium
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+                    $399+<span className="text-sm font-normal text-zinc-500">/mo</span>
+                  </p>
+                  <p className="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+                    Reviews + messaging only
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-4 text-center dark:border-zinc-800 dark:bg-zinc-900/50">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                    Birdeye
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+                    $299+<span className="text-sm font-normal text-zinc-500">/mo</span>
+                  </p>
+                  <p className="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+                    Reviews + basic reports
+                  </p>
                 </div>
               </div>
+
+              <p className="mt-10 text-center text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                All plans include: first month free · no setup fee · no annual contract ·
+                data migration included · local developer you can text
+              </p>
             </Reveal>
           </div>
         </section>
 
         <section
           id="contact"
-          className="border-t border-zinc-200/80 bg-zinc-100/50 py-20 dark:border-zinc-800/80 dark:bg-zinc-900/30"
+          className="scroll-mt-20 py-16 sm:py-20"
         >
-          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:grid-cols-2 sm:px-6">
+          <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
             <Reveal>
-              <div className="relative aspect-[4/3] max-w-md overflow-hidden rounded-2xl border border-zinc-200/80 shadow-lg dark:border-zinc-700 sm:max-w-none">
-                <Image
-                  src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=700&h=525&fit=crop&q=80"
-                  alt="Two colleagues having a focused discussion at a laptop"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 100vw, 40vw"
-                />
-              </div>
-            </Reveal>
-            <div className="text-center sm:text-left">
-              <Reveal>
-                <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                  Tell us about your stack and goals
-                </h2>
-                <p className="mx-auto mt-3 max-w-xl text-zinc-600 sm:mx-0 dark:text-zinc-400">
-                  Use the form to share your details and attach a supporting
-                  document—We will follow up by email.
-                </p>
-              </Reveal>
-              <Reveal delayMs={80}>
-                <a
-                  href="/get_in_touch"
-                  className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-8 text-sm font-semibold text-white transition-[transform,background-color] duration-200 hover:scale-[1.03] hover:bg-zinc-800 active:scale-[0.98] dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white sm:mx-0"
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                About
+              </h2>
+              <p className="mt-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+                I&apos;m the developer behind {brand}, serving local businesses in{" "}
+                {serviceRegionLong}. I build review tools for the region and answer
+                my own support messages.
+              </p>
+              <Link
+                href="/get_in_touch"
+                className="group mt-10 inline-flex h-12 items-center justify-center rounded-full border-2 border-teal-600 bg-transparent px-8 text-sm font-semibold text-teal-700 transition-[transform,background-color,box-shadow] duration-200 hover:scale-[1.02] hover:bg-teal-50 hover:shadow-md active:scale-[0.98] dark:border-teal-500 dark:text-teal-300 dark:hover:bg-teal-950/40"
+              >
+                Book your free demo
+                <span
+                  className="ml-2 inline-block transition-transform group-hover:translate-x-1"
+                  aria-hidden
                 >
-                  Open contact form
-                </a>
-              </Reveal>
-            </div>
+                  →
+                </span>
+              </Link>
+            </Reveal>
           </div>
         </section>
+
+        <CrmLiveDemoModal />
       </main>
 
       <footer className="border-t border-zinc-200/80 py-8 dark:border-zinc-800/80">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-zinc-500 sm:flex-row sm:px-6">
-          <p>© {new Date().getFullYear()} SimBay AI. All rights reserved.</p>
-          <p className="text-center sm:text-right">
-            Cloud · Data & ML · Automation · Agents · Gateway · Compliance
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-2 px-4 text-center text-sm text-zinc-500 sm:px-6">
+          <p>
+            {areaLine}
+            {footerPhone ? (
+              <>
+                {" "}
+                ·{" "}
+                <a
+                  href={`tel:${footerPhone.replace(/\D/g, "")}`}
+                  className="text-zinc-600 underline-offset-2 transition-colors hover:text-teal-600 hover:underline dark:text-zinc-400 dark:hover:text-teal-400"
+                >
+                  {footerPhone}
+                </a>
+              </>
+            ) : (
+              <> · Text support</>
+            )}{" "}
+            ·{" "}
+            <a
+              href={`mailto:${siteMarketing.contactEmail}`}
+              className="text-zinc-600 underline-offset-2 transition-colors hover:text-teal-600 hover:underline dark:text-zinc-400 dark:hover:text-teal-400"
+            >
+              {siteMarketing.contactEmail}
+            </a>
+          </p>
+          <p>
+            © {new Date().getFullYear()} {brand}
           </p>
         </div>
       </footer>
