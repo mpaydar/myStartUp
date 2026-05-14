@@ -7,9 +7,7 @@ import {
 import { getPricingTierByPlanId } from "@/lib/pricingTiers";
 import { getNotificationEmailConfig } from "@/lib/sendContactNotification";
 import {
-  getGetStartedTwilioConfig,
   sendGetStartedOwnerEmail,
-  sendGetStartedSms,
   sendGetStartedUserEmail,
 } from "@/lib/sendGetStartedNotifications";
 
@@ -86,7 +84,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "Email is not configured. Set RESEND_API_KEY and NOTIFICATION_TO_EMAIL.",
+          "Email is not configured. Set RESEND_API_KEY (or resend_api_key) and NOTIFICATION_TO_EMAIL. Set RESEND_FROM_EMAIL to an address on your verified domain so customers receive mail.",
       },
       { status: 503 },
     );
@@ -110,6 +108,7 @@ export async function POST(request: Request) {
       apiKey: mailConfig.apiKey,
       from: mailConfig.from,
       to: email,
+      replyTo: mailConfig.to,
       payload,
     });
   } catch (err) {
@@ -119,21 +118,6 @@ export async function POST(request: Request) {
       { error: `Could not send confirmation email: ${msg}` },
       { status: 502 },
     );
-  }
-
-  const twilioConfig = getGetStartedTwilioConfig();
-  let smsSent = false;
-  if (twilioConfig) {
-    try {
-      await sendGetStartedSms({
-        twilio: twilioConfig,
-        toE164: phoneE164,
-        payload,
-      });
-      smsSent = true;
-    } catch (err) {
-      console.error("get-started SMS failed:", err);
-    }
   }
 
   try {
@@ -151,7 +135,6 @@ export async function POST(request: Request) {
       {
         ok: false,
         emailToUserSent: true,
-        smsSent,
         emailToOwnerSent: false,
         error: `We emailed you, but notifying our team failed: ${msg}`,
       },
@@ -163,8 +146,5 @@ export async function POST(request: Request) {
     ok: true,
     emailToUserSent: true,
     emailToOwnerSent: true,
-    smsSent,
-    smsSkipped: !smsSent && !twilioConfig,
-    smsFailed: !smsSent && Boolean(twilioConfig),
   });
 }

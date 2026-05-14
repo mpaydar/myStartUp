@@ -15,6 +15,7 @@ export function getNotificationEmailConfig(): NotificationEmailConfig | null {
     process.env.NOTIFICATION_TO_EMAIL?.trim() ||
     process.env.notification_to_email?.trim() ||
     "";
+  /** Must be an address on a domain you verified in Resend (required to email customers, not only your inbox). */
   const from =
     process.env.RESEND_FROM_EMAIL?.trim() ||
     process.env.resend_from_email?.trim() ||
@@ -75,6 +76,42 @@ export async function sendContactSubmissionEmail(options: {
   if (error) {
     throw new Error(error.message);
   }
+}
+
+/** Confirmation to the person who submitted the contact form (uses your verified `from` domain). */
+export async function sendCustomerContactConfirmationEmail(options: {
+  apiKey: string;
+  from: string;
+  to: string;
+  replyTo: string;
+  firstName: string;
+  meetingAt: Date;
+  message: string;
+}): Promise<void> {
+  const resend = new Resend(options.apiKey);
+  const meetingLabel = options.meetingAt.toLocaleString("en-US", {
+    dateStyle: "full",
+    timeStyle: "short",
+  });
+  const preview =
+    options.message.length > 2000
+      ? `${options.message.slice(0, 2000)}…`
+      : options.message;
+  const { error } = await resend.emails.send({
+    from: options.from,
+    to: options.to,
+    replyTo: options.replyTo,
+    subject: "We received your request — SimBay AI",
+    html: `
+      <p>Hi ${escapeHtml(options.firstName)},</p>
+      <p>Thanks for reaching out. This confirms we received your message and your requested time: <strong>${escapeHtml(meetingLabel)}</strong>.</p>
+      <p>I&apos;ll meet with you then. If anything changes, reply to this email.</p>
+      <p><strong>What you sent (for your records):</strong></p>
+      <p style="white-space:pre-wrap">${escapeHtml(preview)}</p>
+      <p>— SimBay AI</p>
+    `,
+  });
+  if (error) throw new Error(error.message);
 }
 
 function escapeHtml(s: string): string {

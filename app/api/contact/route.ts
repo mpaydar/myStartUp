@@ -18,6 +18,7 @@ import {
 import {
   getNotificationEmailConfig,
   sendContactSubmissionEmail,
+  sendCustomerContactConfirmationEmail,
 } from "@/lib/sendContactNotification";
 
 export const runtime = "nodejs";
@@ -224,7 +225,7 @@ export async function POST(request: Request) {
     }
     return NextResponse.json(
       {
-        error: `Email notifications are not configured. Add to .env: ${missing.join(", ")}.`,
+        error: `Email notifications are not configured. Add to .env: ${missing.join(", ")}. For customer confirmations, also set RESEND_FROM_EMAIL to an address on your verified domain (see Resend → Domains).`,
       },
       { status: 503 },
     );
@@ -285,10 +286,28 @@ export async function POST(request: Request) {
     );
   }
 
+  let customerConfirmationSent = false;
+  try {
+    await sendCustomerContactConfirmationEmail({
+      apiKey: mailConfig.apiKey,
+      from: mailConfig.from,
+      to: email,
+      replyTo: mailConfig.to,
+      firstName,
+      meetingAt,
+      message,
+    });
+    customerConfirmationSent = true;
+  } catch (err) {
+    console.error("Customer confirmation email failed:", err);
+  }
+
   return NextResponse.json({
     ok: true,
     emailSent: true,
-    message:
-      "Your message has been successfully recorded. I will meet with you at the time you selected and follow up by email if anything changes.",
+    customerConfirmationSent,
+    message: customerConfirmationSent
+      ? "You're all set — check your inbox for a confirmation email from us with your meeting time and a copy of what you sent."
+      : "Your message has been successfully recorded. I will meet with you at the time you selected and follow up by email if anything changes. (We could not send a confirmation copy to your address — check spam or contact us if needed.)",
   });
 }

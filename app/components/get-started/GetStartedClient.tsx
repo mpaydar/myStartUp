@@ -162,11 +162,6 @@ export function GetStartedClient({ tier }: GetStartedClientProps) {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [notifyMeta, setNotifyMeta] = useState<{
-    smsSent: boolean;
-    smsSkipped?: boolean;
-    smsFailed?: boolean;
-  } | null>(null);
 
   const step1Valid = useMemo(() => {
     return (
@@ -206,9 +201,6 @@ export function GetStartedClient({ tier }: GetStartedClientProps) {
       });
       const data = (await res.json().catch(() => ({}))) as {
         error?: string;
-        smsSent?: boolean;
-        smsSkipped?: boolean;
-        smsFailed?: boolean;
       };
       if (!res.ok) {
         setSubmitError(
@@ -216,11 +208,6 @@ export function GetStartedClient({ tier }: GetStartedClientProps) {
         );
         return;
       }
-      setNotifyMeta({
-        smsSent: Boolean(data.smsSent),
-        smsSkipped: Boolean(data.smsSkipped),
-        smsFailed: Boolean(data.smsFailed),
-      });
       setCurrentStep(2);
     } finally {
       setIsSubmitting(false);
@@ -476,37 +463,16 @@ export function GetStartedClient({ tier }: GetStartedClientProps) {
               You&apos;re in
             </h2>
             <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-              Thanks, {form.firstName}.{" "}
-              {notifyMeta?.smsSent ? (
-                <>
-                  We&apos;ll text you at {form.phone} to finish setup for{" "}
-                  {form.businessName} on the{" "}
-                  <strong className="text-zinc-800 dark:text-zinc-200">
-                    {tier.name}
-                  </strong>{" "}
-                  plan. Watch your inbox ({form.email}) for a confirmation email too.
-                </>
-              ) : notifyMeta?.smsFailed ? (
-                <>
-                  We emailed you at {form.email}. We couldn&apos;t deliver an SMS to{" "}
-                  {form.phone} automatically — we&apos;ll follow up by email or call for{" "}
-                  <strong className="text-zinc-800 dark:text-zinc-200">
-                    {form.businessName}
-                  </strong>{" "}
-                  on the <strong className="text-zinc-800 dark:text-zinc-200">{tier.name}</strong>{" "}
-                  plan.
-                </>
-              ) : (
-                <>
-                  Check <strong className="text-zinc-800 dark:text-zinc-200">{form.email}</strong>{" "}
-                  for your confirmation. SMS from this flow isn&apos;t configured on the
-                  server yet — you&apos;re still on the list for{" "}
-                  <strong className="text-zinc-800 dark:text-zinc-200">
-                    {form.businessName}
-                  </strong>{" "}
-                  ({tier.name}).
-                </>
-              )}
+              Thanks, {form.firstName}. We emailed{" "}
+              <strong className="text-zinc-800 dark:text-zinc-200">{form.email}</strong>{" "}
+              with your confirmation for{" "}
+              <strong className="text-zinc-800 dark:text-zinc-200">
+                {form.businessName}
+              </strong>{" "}
+              on the{" "}
+              <strong className="text-zinc-800 dark:text-zinc-200">{tier.name}</strong>{" "}
+              plan. We&apos;ll follow up by email to finish setup (we have{" "}
+              {form.phone} on file if we need to reach you).
             </p>
             <Link
               href="/"

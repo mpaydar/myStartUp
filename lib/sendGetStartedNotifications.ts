@@ -1,32 +1,5 @@
-import twilio from "twilio";
-
 import { getNotificationEmailConfig } from "@/lib/sendContactNotification";
 import { Resend } from "resend";
-
-export type GetStartedTwilioConfig = {
-  accountSid: string;
-  authToken: string;
-  fromNumber: string;
-};
-
-export function getGetStartedTwilioConfig(): GetStartedTwilioConfig | null {
-  const accountSid =
-    process.env.TWILIO_ACCOUNT_SID?.trim() ||
-    process.env.twilio_sid?.trim() ||
-    process.env.twilio_account_sid?.trim() ||
-    "";
-  const authToken =
-    process.env.TWILIO_AUTH_TOKEN?.trim() ||
-    process.env.twilio_secret?.trim() ||
-    process.env.twilio_auth_token?.trim() ||
-    "";
-  const fromNumber =
-    process.env.TWILIO_FROM_NUMBER?.trim() ||
-    process.env.twilio_from_number?.trim() ||
-    "";
-  if (!accountSid || !authToken || !fromNumber) return null;
-  return { accountSid, authToken, fromNumber };
-}
 
 function escapeHtml(s: string): string {
   return s
@@ -53,6 +26,7 @@ export async function sendGetStartedUserEmail(options: {
   apiKey: string;
   from: string;
   to: string;
+  replyTo: string;
   payload: GetStartedLeadPayload;
 }): Promise<void> {
   const resend = new Resend(options.apiKey);
@@ -61,11 +35,12 @@ export async function sendGetStartedUserEmail(options: {
   const { error } = await resend.emails.send({
     from: options.from,
     to: options.to,
+    replyTo: options.replyTo,
     subject: `You're in — SimBay (${planName}) for ${businessName}`,
     html: `
       <p>Hi ${escapeHtml(firstName)},</p>
       <p>Thanks for choosing SimBay. We received your <strong>${escapeHtml(planName)}</strong> plan (${escapeHtml(String(planPrice))}/mo) for <strong>${escapeHtml(businessName)}</strong>.</p>
-      <p>We&apos;ll text you at <strong>${escapeHtml(phoneDisplay)}</strong> to finish setup. If you don&apos;t hear from us within one business day, reply to this email.</p>
+      <p>We have your number on file (<strong>${escapeHtml(phoneDisplay)}</strong>) and will reach out by <strong>email</strong> to finish setup. If you don&apos;t hear from us within one business day, reply to this message.</p>
       <p>— SimBay AI</p>
     `,
   });
@@ -101,21 +76,4 @@ export async function sendGetStartedOwnerEmail(options: {
     `,
   });
   if (error) throw new Error(error.message);
-}
-
-export async function sendGetStartedSms(options: {
-  twilio: GetStartedTwilioConfig;
-  toE164: string;
-  payload: GetStartedLeadPayload;
-}): Promise<void> {
-  const { firstName, businessName, planName } = options.payload;
-  const client = twilio(options.twilio.accountSid, options.twilio.authToken);
-  const body = `Hi ${firstName} — SimBay here. We got your ${planName} signup for ${businessName}. We'll follow up shortly to finish setup. Reply STOP to opt out.`;
-  const truncated =
-    body.length > 1500 ? `${body.slice(0, 1490)}… (see email)` : body;
-  await client.messages.create({
-    body: truncated,
-    from: options.twilio.fromNumber,
-    to: options.toE164,
-  });
 }

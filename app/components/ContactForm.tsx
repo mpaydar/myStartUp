@@ -358,6 +358,7 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
       const data = (await res.json().catch(() => ({}))) as {
         error?: string;
         message?: string;
+        customerConfirmationSent?: boolean;
       };
 
       if (!res.ok) {
