@@ -19,7 +19,12 @@ export default async function GetStartedPage({ searchParams }: PageProps) {
   const { plan } = await searchParams;
   const tier = getPricingTierByPlanId(plan) ?? getDefaultPricingTier();
   const isWebPlan = tier.service === "web";
-  const pricingBackHref = isWebPlan ? "/#web-apps" : "/#pricing";
+  const isAiPlan = tier.service === "ai";
+  const pricingBackHref = isWebPlan
+    ? "/#web-apps"
+    : isAiPlan
+      ? "/#ai-api"
+      : "/#pricing";
 
   return (
     <div className="min-h-full bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
@@ -36,16 +41,23 @@ export default async function GetStartedPage({ searchParams }: PageProps) {
               href={pricingBackHref}
               className="transition-colors hover:text-violet-900 dark:hover:text-violet-300"
             >
-              ← Back to {isWebPlan ? "web pricing" : "pricing"}
+              ← Back to{" "}
+              {isWebPlan ? "web pricing" : isAiPlan ? "AI & API pricing" : "pricing"}
             </Link>
           </p>
           <h1 className="mt-6 text-2xl font-semibold tracking-tight sm:text-3xl">
-            {isWebPlan ? "Get your website started" : "Get started"}
+            {isWebPlan
+              ? "Get your website started"
+              : isAiPlan
+                ? "Start your automation project"
+                : "Get started"}
           </h1>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
             {isWebPlan
               ? "Tell us about your business—we'll reach out about your site. No payment today."
-              : "A few details and we'll reach out to finish setup—no payment today."}
+              : isAiPlan
+                ? "Tell us what you want to automate—we'll confirm scope and quote. No payment today."
+                : "A few details and we'll reach out to finish setup—no payment today."}
           </p>
 
           <div className="mt-10 rounded-3xl border border-zinc-200/90 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/80 sm:p-10">

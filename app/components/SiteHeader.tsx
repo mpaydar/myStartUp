@@ -50,6 +50,12 @@ export function SiteHeader() {
             Websites
           </Link>
           <Link
+            href="/#ai-api"
+            className="transition-colors hover:text-sky-600 dark:hover:text-sky-400"
+          >
+            AI &amp; API
+          </Link>
+          <Link
             href="/get_in_touch"
             className="rounded-full bg-zinc-900 px-4 py-1.5 font-medium text-white transition-transform duration-200 hover:scale-[1.03] hover:bg-zinc-800 active:scale-[0.98] dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
           >

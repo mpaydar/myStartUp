@@ -3,9 +3,10 @@ import Link from "next/link";
 
 import { serviceAreaLine, siteMarketing } from "@/lib/siteMarketing";
 import { featureSectionImages } from "@/lib/featureSectionImages";
+import { AiApiIntegrationSection } from "./components/home/AiApiIntegrationSection";
 import { CrmLiveDemoModal } from "./components/home/CrmLiveDemoModal";
 import { FeaturePillarSection } from "./components/home/FeaturePillarSection";
-import { HeroEngagement } from "./components/home/HeroEngagement";
+import { HeroSection } from "./components/home/HeroSection";
 import { PricingTierCards } from "./components/home/PricingTierCards";
 import { pricingTiers } from "@/lib/pricingTiers";
 import { webAppPricingTiers } from "@/lib/webAppPricingTiers";
@@ -16,9 +17,6 @@ import { SiteHeader } from "./components/SiteHeader";
 
 const { brand, serviceRegionShort, serviceRegionLong, verticalsTitle, verticalsBody } =
   siteMarketing;
-
-/** Hero badge: "Salons, HVAC & Restaurants" → middle-dot list */
-const heroBadgeVerticals = verticalsTitle.replace(/, /g, " · ").replace(" & ", " · ");
 
 export const metadata: Metadata = {
   title: `Review Management for ${verticalsTitle} in ${serviceRegionLong} | ${brand}`,
@@ -52,122 +50,7 @@ export default function Home() {
       <SiteHeader />
 
       <main>
-        <section className="relative mx-auto max-w-6xl overflow-hidden px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20">
-          <div
-            className="animate-blob-a pointer-events-none absolute -right-24 top-8 h-72 w-72 rounded-full bg-teal-400/20 blur-3xl dark:bg-teal-500/15"
-            aria-hidden
-          />
-          <div
-            className="animate-blob-b pointer-events-none absolute -left-20 bottom-0 h-64 w-64 rounded-full bg-violet-400/15 blur-3xl dark:bg-violet-500/10"
-            aria-hidden
-          />
-
-          <div className="relative grid items-center gap-12 lg:grid-cols-2 lg:gap-14">
-            <div className="text-center lg:text-left">
-              <p className="animate-hero-in mb-4 inline-flex items-center gap-2 rounded-full border border-zinc-200/90 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-100">
-                <span
-                  className="relative flex h-2 w-2 shrink-0 motion-reduce:animate-none"
-                  aria-hidden
-                >
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/70 motion-reduce:hidden" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-700 dark:bg-emerald-500" />
-                </span>
-                <span className="text-balance">
-                  {serviceRegionShort} · {heroBadgeVerticals}
-                </span>
-              </p>
-              <h1 className="animate-hero-in-delay-1 text-4xl font-semibold tracking-tight text-balance sm:text-5xl sm:leading-[1.12]">
-                <span className="text-zinc-900 dark:text-zinc-50">
-                  More 5-star reviews.
-                </span>{" "}
-                <span className="text-violet-600 dark:text-violet-400">Less work.</span>
-              </h1>
-              <p className="animate-hero-in-delay-2 mx-auto mt-6 max-w-xl text-lg leading-relaxed text-zinc-600 lg:mx-0 dark:text-zinc-400">
-                We automatically ask your customers for reviews, help them write one in
-                3 taps, and turn every response into a business insight — for a fraction
-                of what Podium charges.
-              </p>
-              <div className="animate-hero-in-delay-3 mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
-                <Link
-                  href="/get_in_touch"
-                  className="group inline-flex h-12 min-h-[3rem] flex-1 items-center justify-center rounded-2xl border-2 border-zinc-900 bg-white px-6 text-sm font-semibold text-zinc-900 transition-[transform,background-color,box-shadow] duration-200 hover:bg-zinc-50 hover:shadow-md active:scale-[0.99] dark:border-zinc-100 dark:bg-zinc-950 dark:text-zinc-50 dark:hover:bg-zinc-900 sm:min-w-[11rem] sm:flex-initial"
-                >
-                  Book a free demo
-                  <span
-                    className="ml-2 inline-block transition-transform duration-200 group-hover:translate-x-0.5"
-                    aria-hidden
-                  >
-                    →
-                  </span>
-                </Link>
-                <a
-                  href="/#crm-live-demo"
-                  className="inline-flex h-12 min-h-[3rem] flex-1 items-center justify-center rounded-2xl border-2 border-zinc-900 bg-transparent px-6 text-sm font-semibold text-zinc-900 transition-[transform,background-color,box-shadow] duration-200 hover:bg-zinc-50 hover:shadow-md active:scale-[0.99] dark:border-zinc-100 dark:text-zinc-50 dark:hover:bg-zinc-900 sm:min-w-[11rem] sm:flex-initial"
-                >
-                  See how it works
-                </a>
-              </div>
-              <div className="animate-hero-in-delay-4 mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
-                <div className="flex -space-x-2" aria-hidden>
-                  {[
-                    { initials: "MF", className: "bg-rose-500 text-white" },
-                    { initials: "JT", className: "bg-sky-600 text-white" },
-                    { initials: "SK", className: "bg-amber-500 text-zinc-900" },
-                    { initials: "AL", className: "bg-emerald-700 text-white" },
-                  ].map((a) => (
-                    <span
-                      key={a.initials}
-                      className={`inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-white text-xs font-semibold dark:border-zinc-950 ${a.className}`}
-                    >
-                      {a.initials}
-                    </span>
-                  ))}
-                </div>
-                <p className="max-w-xs text-left text-sm leading-snug text-zinc-600 sm:max-w-none dark:text-zinc-400">
-                  Local businesses in {serviceRegionShort} avg{" "}
-                  <span className="font-medium text-zinc-800 dark:text-zinc-200">
-                    4.8 stars
-                  </span>{" "}
-                  ·{" "}
-                  <span className="font-medium text-zinc-800 dark:text-zinc-200">
-                    60–70% review rate
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            <HeroEngagement regionLabel={serviceRegionShort} />
-          </div>
-
-          <div className="animate-hero-in-delay-4 relative mx-auto mt-14 max-w-6xl border-t border-zinc-200/90 pt-8 dark:border-zinc-800/80">
-            <ul className="flex flex-col items-center justify-center gap-3 text-sm text-zinc-700 sm:flex-row sm:flex-wrap sm:gap-x-8 sm:gap-y-2 dark:text-zinc-300">
-              <li className="flex items-center gap-2">
-                <span className="text-emerald-700 dark:text-emerald-500" aria-hidden>
-                  ✓
-                </span>
-                First month free
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-emerald-700 dark:text-emerald-500" aria-hidden>
-                  ✓
-                </span>
-                No annual contract
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-emerald-700 dark:text-emerald-500" aria-hidden>
-                  ✓
-                </span>
-                Data migration included
-              </li>
-            </ul>
-            <p className="mt-4 flex items-center justify-center gap-2 text-center text-sm text-zinc-700 dark:text-zinc-300">
-              <span className="text-emerald-700 dark:text-emerald-500" aria-hidden>
-                ✓
-              </span>
-              Local developer · text me directly
-            </p>
-          </div>
-        </section>
+        <HeroSection />
 
         <FeaturePillarSection
           id="reviews"
@@ -393,6 +276,8 @@ export default function Home() {
             </Reveal>
           </div>
         </section>
+
+        <AiApiIntegrationSection />
 
         <section
           id="contact"

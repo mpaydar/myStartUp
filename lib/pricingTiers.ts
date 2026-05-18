@@ -1,4 +1,5 @@
 import type { PricingTier } from "@/lib/pricingTypes";
+import { aiApiPricingTiers } from "@/lib/aiApiPricingTiers";
 import { webAppPricingTiers } from "@/lib/webAppPricingTiers";
 
 export type { PricingFeature, PricingService, PricingTier } from "@/lib/pricingTypes";
@@ -69,7 +70,11 @@ export const pricingTiers: PricingTier[] = [
   },
 ];
 
-const allPricingTiers: PricingTier[] = [...pricingTiers, ...webAppPricingTiers];
+const allPricingTiers: PricingTier[] = [
+  ...pricingTiers,
+  ...webAppPricingTiers,
+  ...aiApiPricingTiers,
+];
 
 export function getPricingTierByPlanId(
   planId: string | null | undefined,

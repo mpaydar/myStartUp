@@ -56,13 +56,24 @@ const SERVICE_INTERESTS = [
     id: "landing_modernize",
     label: "Modernize my existing site or landing page",
   },
+  {
+    id: "ai_api_integration",
+    label: "AI & API integration — chatbots, automations, custom builds",
+  },
 ] as const;
+
+const VALID_INTEREST_IDS: Set<string> = new Set(SERVICE_INTERESTS.map((o) => o.id));
 
 type ContactFormProps = {
   recaptchaSiteKey: string | null;
+  /** Pre-select topic chips (e.g. from /get_in_touch?interest=ai_api_integration). */
+  defaultInterestIds?: readonly string[];
 };
 
-export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
+export function ContactForm({
+  recaptchaSiteKey,
+  defaultInterestIds,
+}: ContactFormProps) {
   const [status, setStatus] = useState<Status>("idle");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -73,9 +84,13 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
   const [meetingTime, setMeetingTime] = useState("");
   const [bookedMeetingTimes, setBookedMeetingTimes] = useState<string[]>([]);
   const [slotsLoading, setSlotsLoading] = useState(false);
-  const [selectedInterests, setSelectedInterests] = useState<Set<string>>(
-    () => new Set(),
-  );
+  const [selectedInterests, setSelectedInterests] = useState<Set<string>>(() => {
+    const initial = new Set<string>();
+    for (const id of defaultInterestIds ?? []) {
+      if (VALID_INTEREST_IDS.has(id)) initial.add(id);
+    }
+    return initial;
+  });
   const minDate = useSyncExternalStore(
     subscribeMinDate,
     getMinDateSnapshot,
@@ -447,19 +462,23 @@ export function ContactForm({ recaptchaSiteKey }: ContactFormProps) {
           What would you like to talk about?
         </legend>
         <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-          SimBay covers automated reviews and CRM. I also take on{" "}
+          SimBay covers automated reviews and CRM. I also build{" "}
+          <strong className="font-medium text-zinc-800 dark:text-zinc-200">
+            AI chatbots, API integrations, and workflow automations
+          </strong>
+          , take on{" "}
           <strong className="font-medium text-zinc-800 dark:text-zinc-200">
             form and CRM design
           </strong>{" "}
-          projects, and I can build a{" "}
+          projects, and can build a{" "}
           <strong className="font-medium text-zinc-800 dark:text-zinc-200">
             new landing page
           </strong>{" "}
           or{" "}
           <strong className="font-medium text-zinc-800 dark:text-zinc-200">
             refresh your current site
-          </strong>{" "}
-          so it looks more modern—pick anything that applies (one or more).
+          </strong>
+          —pick anything that applies (one or more).
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           {SERVICE_INTERESTS.map((item) => {

@@ -13,9 +13,16 @@ export const metadata: Metadata = {
     "Book a demo in NJ or NY: review software, form and CRM design, or a new or refreshed landing page for your business.",
 };
 
-export default function GetInTouchPage() {
+type PageProps = {
+  searchParams: Promise<{ interest?: string }>;
+};
+
+export default async function GetInTouchPage({ searchParams }: PageProps) {
+  const { interest } = await searchParams;
   const recaptchaSiteKey = getRecaptchaSiteKey();
   const directCta = getContactDirectCta();
+  const defaultInterestIds =
+    interest?.trim() === "ai_api_integration" ? (["ai_api_integration"] as const) : undefined;
 
   return (
     <div className="min-h-full bg-gradient-to-b from-zinc-50 via-white to-zinc-50 text-zinc-900 dark:from-zinc-950 dark:via-zinc-950 dark:to-black dark:text-zinc-100">
@@ -66,7 +73,10 @@ export default function GetInTouchPage() {
           </div>
 
           <div className="mt-10 rounded-3xl border border-zinc-200/90 bg-white/80 p-6 shadow-lg shadow-zinc-200/40 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/80 dark:shadow-none sm:p-10">
-            <ContactForm recaptchaSiteKey={recaptchaSiteKey} />
+            <ContactForm
+              recaptchaSiteKey={recaptchaSiteKey}
+              defaultInterestIds={defaultInterestIds}
+            />
           </div>
 
           <ContactTextDirect

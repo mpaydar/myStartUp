@@ -132,35 +132,77 @@ function ProgressBar({ currentStep }: { currentStep: number }) {
   );
 }
 
-function PlanBanner({ tier }: { tier: PricingTier }) {
+function planServiceLabel(tier: PricingTier): string {
+  if (tier.service === "web") return "Website";
+  if (tier.service === "ai") return "AI & API";
+  return "Reviews";
+}
+
+function planBannerSubtitle(tier: PricingTier): string {
+  if (tier.service === "web" && tier.price === 0) {
+    return "Free one-time build — we'll confirm scope before any paid care plan.";
+  }
+  if (tier.service === "web") {
+    return "We'll confirm scope and billing before your site goes live.";
+  }
+  if (tier.service === "ai" && tier.pricePeriod === "project") {
+    return "We'll scope your integration and send a firm quote before work starts.";
+  }
+  if (tier.service === "ai" && tier.pricePeriod === "month") {
+    return "We'll confirm automations and billing before going live. No payment today.";
+  }
+  return "First month free · cancel anytime";
+}
+
+function PlanBannerPrice({ tier }: { tier: PricingTier }) {
+  if (tier.pricePeriod === "quote") {
+    return <>Custom</>;
+  }
+  if (tier.service === "web" && tier.price === 0 && tier.pricePeriod === "none") {
+    return <>$0</>;
+  }
+  if (tier.pricePeriod === "project") {
+    return (
+      <>
+        From ${tier.price}
+        <span className="text-sm font-semibold opacity-90"> project</span>
+      </>
+    );
+  }
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-violet-200/90 bg-violet-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5 dark:border-violet-900/50 dark:bg-violet-950/40">
+    <>
+      ${tier.price}
+      {tier.pricePeriod === "month" ? (
+        <span className="text-sm font-semibold opacity-90">/mo</span>
+      ) : null}
+    </>
+  );
+}
+
+function PlanBanner({ tier }: { tier: PricingTier }) {
+  const isAi = tier.service === "ai";
+  const shell = isAi
+    ? "border-sky-200/90 bg-sky-50 dark:border-sky-900/50 dark:bg-sky-950/40"
+    : "border-violet-200/90 bg-violet-50 dark:border-violet-900/50 dark:bg-violet-950/40";
+  const title = isAi
+    ? "text-sky-950 dark:text-sky-100"
+    : "text-violet-950 dark:text-violet-100";
+  const sub = isAi
+    ? "text-sky-700/90 dark:text-sky-300/90"
+    : "text-violet-700/90 dark:text-violet-300/90";
+
+  return (
+    <div
+      className={`flex flex-col gap-3 rounded-2xl border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5 ${shell}`}
+    >
       <div>
-        <p className="text-base font-semibold text-violet-950 dark:text-violet-100">
-          {tier.name} plan selected
-          {tier.service === "web" ? " · Website" : " · Reviews"}
+        <p className={`text-base font-semibold ${title}`}>
+          {tier.name} plan selected · {planServiceLabel(tier)}
         </p>
-        <p className="mt-0.5 text-sm text-violet-700/90 dark:text-violet-300/90">
-          {tier.service === "web" && tier.price === 0
-            ? "Free one-time build — we'll confirm scope before any paid care plan."
-            : tier.service === "web"
-              ? "We'll confirm scope and billing before your site goes live."
-              : "First month free · cancel anytime"}
-        </p>
+        <p className={`mt-0.5 text-sm ${sub}`}>{planBannerSubtitle(tier)}</p>
       </div>
-      <p className="text-lg font-semibold tabular-nums text-violet-950 dark:text-violet-100 sm:text-right">
-        {tier.service === "web" && tier.price === 0 && tier.pricePeriod === "none" ? (
-          "$0"
-        ) : (
-          <>
-            ${tier.price}
-            {tier.pricePeriod === "month" ? (
-              <span className="text-sm font-semibold text-violet-800 dark:text-violet-200">
-                /mo
-              </span>
-            ) : null}
-          </>
-        )}
+      <p className={`text-lg font-semibold tabular-nums sm:text-right ${title}`}>
+        <PlanBannerPrice tier={tier} />
       </p>
     </div>
   );

@@ -8,7 +8,7 @@ import type { PricingTier } from "@/lib/pricingTypes";
 type PricingTierCardsProps = {
   tiers: PricingTier[];
   defaultSelectedId?: string;
-  accent?: "teal" | "violet";
+  accent?: "teal" | "violet" | "sky";
 };
 
 const accentClasses = {
@@ -34,10 +34,35 @@ const accentClasses = {
       "bg-violet-600 hover:bg-violet-500 dark:bg-violet-500 dark:hover:bg-violet-400",
     focusRing: "focus-visible:ring-violet-500",
   },
+  sky: {
+    selected:
+      "z-10 border-sky-500 ring-2 ring-sky-500/70 hover:border-sky-400 hover:shadow-sky-500/15 dark:border-sky-500 dark:ring-sky-500/50 dark:hover:shadow-sky-900/25",
+    hover: "border-zinc-200 hover:border-sky-200/90 hover:shadow-sky-500/10 dark:border-zinc-800 dark:hover:border-sky-800/60",
+    badge: "bg-sky-600 dark:bg-sky-500",
+    priceHover: "group-hover:text-sky-700 dark:group-hover:text-sky-300",
+    check: "text-sky-600 dark:text-sky-400",
+    solidCta: "bg-sky-600 hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400",
+    focusRing: "focus-visible:ring-sky-500",
+  },
 } as const;
 
-function PriceDisplay({ tier, accent }: { tier: PricingTier; accent: "teal" | "violet" }) {
+type Accent = keyof typeof accentClasses;
+
+function PriceDisplay({ tier, accent }: { tier: PricingTier; accent: Accent }) {
   const a = accentClasses[accent];
+
+  if (tier.pricePeriod === "quote") {
+    return (
+      <p className="mt-2">
+        <span
+          className={`text-3xl font-semibold tracking-tight text-zinc-900 transition-colors ${a.priceHover} dark:text-zinc-50`}
+        >
+          Custom
+        </span>
+      </p>
+    );
+  }
+
   if (tier.pricePeriod === "none" && tier.price === 0) {
     return (
       <p className="mt-2">
@@ -46,6 +71,22 @@ function PriceDisplay({ tier, accent }: { tier: PricingTier; accent: "teal" | "v
         >
           $0
         </span>
+      </p>
+    );
+  }
+
+  if (tier.pricePeriod === "project") {
+    return (
+      <p className="mt-2 flex flex-wrap items-baseline gap-x-1 gap-y-0">
+        <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+          From
+        </span>
+        <span
+          className={`text-3xl font-semibold tracking-tight text-zinc-900 transition-colors ${a.priceHover} dark:text-zinc-50`}
+        >
+          ${tier.price}
+        </span>
+        <span className="text-sm text-zinc-500 dark:text-zinc-400">project</span>
       </p>
     );
   }
@@ -62,6 +103,10 @@ function PriceDisplay({ tier, accent }: { tier: PricingTier; accent: "teal" | "v
       ) : null}
     </p>
   );
+}
+
+function tierCtaHref(tier: PricingTier): string {
+  return tier.href ?? `/get_started?plan=${tier.id}`;
 }
 
 export function PricingTierCards({
@@ -142,7 +187,7 @@ export function PricingTierCards({
               ))}
             </ul>
             <Link
-              href={`/get_started?plan=${tier.id}`}
+              href={tierCtaHref(tier)}
               className={
                 tier.ctaStyle === "solid"
                   ? `relative z-[1] mt-8 inline-flex h-12 w-full items-center justify-center gap-1 rounded-full text-sm font-semibold text-white transition-[transform,background-color,box-shadow] duration-200 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] ${a.solidCta}`
