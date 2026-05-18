@@ -11,9 +11,9 @@ export const siteMarketing = {
   verticalsTitle: "Salons, HVAC & Restaurants",
   /** Natural phrasing in body copy. */
   verticalsBody: "salons, HVAC contractors, and restaurants",
-  contactEmail: "hello@simbay.ai",
+  contactEmail: "moe@simbayai.tech",
   /** Set when you want a literal phone in the footer; otherwise omitted in UI. */
-  phoneDisplay: "" as string,
+  phoneDisplay: "917-434-3777",
 /**
  * Optional override for the “Text me directly” button on /get_in_touch.
  * If empty, the same digits from `phoneDisplay` are used for an `sms:` link when possible.
@@ -23,7 +23,7 @@ export const siteMarketing = {
  */
   textDirectSmsHref: "" as string,
   /** Label for the SMS button; defaults to `Text {phoneDisplay}` when href is inferred. */
-  textDirectButtonLabel: "" as string,
+  textDirectButtonLabel: "Send a text",
   /** Example social proof — replace with a real client when you have one. */
   resultsQuote:
     "Went from 12 to 47 Google reviews in 60 days.",
@@ -41,17 +41,19 @@ export function serviceAreaLine() {
 
 /** SMS CTA for contact page: explicit href, else digits from `phoneDisplay`. */
 export function getTextDirectSmsCta():
-  | { href: string; label: string }
+  | { href: string; label: string; displayPhone: string }
   | null {
   const explicit = siteMarketing.textDirectSmsHref.trim();
   const labelOverride = siteMarketing.textDirectButtonLabel.trim();
+  const phoneRaw = siteMarketing.phoneDisplay.trim();
   if (explicit) {
     return {
       href: explicit,
       label: labelOverride || "Text us",
+      displayPhone: phoneRaw,
     };
   }
-  const phone = siteMarketing.phoneDisplay.trim();
+  const phone = phoneRaw;
   const digits = phone.replace(/\D/g, "");
   if (digits.length < 10) return null;
   const e164 =
@@ -63,6 +65,7 @@ export function getTextDirectSmsCta():
   return {
     href: `sms:+${e164}`,
     label: labelOverride || `Text ${phone}`,
+    displayPhone: phone,
   };
 }
 
@@ -74,9 +77,17 @@ export function getContactDirectCta(): {
   href: string;
   label: string;
   mode: "sms" | "email";
+  displayPhone?: string;
 } {
   const sms = getTextDirectSmsCta();
-  if (sms) return { ...sms, mode: "sms" as const };
+  if (sms) {
+    const { displayPhone, ...rest } = sms;
+    return {
+      ...rest,
+      mode: "sms" as const,
+      ...(displayPhone ? { displayPhone } : {}),
+    };
+  }
   const email = siteMarketing.contactEmail.trim();
   const subject = encodeURIComponent("SimBay — quick question");
   const body = encodeURIComponent(

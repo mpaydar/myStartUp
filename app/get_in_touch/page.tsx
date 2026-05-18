@@ -73,6 +73,7 @@ export default function GetInTouchPage() {
             href={directCta.href}
             label={directCta.label}
             mode={directCta.mode}
+            displayPhone={directCta.displayPhone}
           />
         </div>
       </main>

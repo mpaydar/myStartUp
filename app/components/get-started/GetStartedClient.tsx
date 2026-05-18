@@ -138,16 +138,29 @@ function PlanBanner({ tier }: { tier: PricingTier }) {
       <div>
         <p className="text-base font-semibold text-violet-950 dark:text-violet-100">
           {tier.name} plan selected
+          {tier.service === "web" ? " · Website" : " · Reviews"}
         </p>
         <p className="mt-0.5 text-sm text-violet-700/90 dark:text-violet-300/90">
-          First month free · cancel anytime
+          {tier.service === "web" && tier.price === 0
+            ? "Free one-time build — we'll confirm scope before any paid care plan."
+            : tier.service === "web"
+              ? "We'll confirm scope and billing before your site goes live."
+              : "First month free · cancel anytime"}
         </p>
       </div>
       <p className="text-lg font-semibold tabular-nums text-violet-950 dark:text-violet-100 sm:text-right">
-        ${tier.price}
-        <span className="text-sm font-semibold text-violet-800 dark:text-violet-200">
-          /mo
-        </span>
+        {tier.service === "web" && tier.price === 0 && tier.pricePeriod === "none" ? (
+          "$0"
+        ) : (
+          <>
+            ${tier.price}
+            {tier.pricePeriod === "month" ? (
+              <span className="text-sm font-semibold text-violet-800 dark:text-violet-200">
+                /mo
+              </span>
+            ) : null}
+          </>
+        )}
       </p>
     </div>
   );

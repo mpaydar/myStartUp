@@ -1,22 +1,16 @@
-export type PricingFeature = { text: string; included: boolean };
+import type { PricingTier } from "@/lib/pricingTypes";
+import { webAppPricingTiers } from "@/lib/webAppPricingTiers";
 
-export type PricingTier = {
-  id: string;
-  name: string;
-  price: number;
-  tagline: string;
-  features: PricingFeature[];
-  cta: string;
-  ctaStyle: "outline" | "solid";
-  highlight?: boolean;
-};
+export type { PricingFeature, PricingService, PricingTier } from "@/lib/pricingTypes";
 
 export const pricingTiers: PricingTier[] = [
   {
     id: "starter",
     name: "Starter",
     price: 49,
+    pricePeriod: "month",
     tagline: "Perfect if you just want more Google reviews without the fuss.",
+    service: "reviews",
     features: [
       { text: "Automated review SMS", included: true },
       { text: "AI-assisted review writing", included: true },
@@ -34,8 +28,10 @@ export const pricingTiers: PricingTier[] = [
     id: "growth",
     name: "Growth",
     price: 119,
+    pricePeriod: "month",
     tagline:
       "Reviews + intelligence. Know what customers think and what to do about it.",
+    service: "reviews",
     features: [
       { text: "Everything in Starter", included: true },
       { text: "Unlimited SMS", included: true },
@@ -54,8 +50,10 @@ export const pricingTiers: PricingTier[] = [
     id: "pro",
     name: "Pro",
     price: 199,
+    pricePeriod: "month",
     tagline:
       "The full stack. Reviews, insights, CRM, photos, and social — all on autopilot.",
+    service: "reviews",
     features: [
       { text: "Everything in Growth", included: true },
       { text: "Photo credits system", included: true },
@@ -71,12 +69,14 @@ export const pricingTiers: PricingTier[] = [
   },
 ];
 
+const allPricingTiers: PricingTier[] = [...pricingTiers, ...webAppPricingTiers];
+
 export function getPricingTierByPlanId(
   planId: string | null | undefined,
 ): PricingTier | undefined {
   if (!planId) return undefined;
   const id = planId.toLowerCase().trim();
-  return pricingTiers.find((t) => t.id === id);
+  return allPricingTiers.find((t) => t.id === id);
 }
 
 export function getDefaultPricingTier(): PricingTier {

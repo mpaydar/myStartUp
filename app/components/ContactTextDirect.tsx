@@ -3,15 +3,19 @@ type ContactTextDirectProps = {
   label: string;
   /** When no SMS number is configured, we use a prefilled mailto instead. */
   mode: "sms" | "email";
+  /** Listed in body copy when mode is SMS. */
+  displayPhone?: string;
 };
 
 /**
  * Shown below the contact form: skip-the-form divider + direct reach CTA.
  */
-export function ContactTextDirect({ href, label, mode }: ContactTextDirectProps) {
+export function ContactTextDirect({ href, label, mode, displayPhone }: ContactTextDirectProps) {
   const subcopy =
     mode === "sms"
-      ? "Most owners prefer this — faster and more personal."
+      ? displayPhone
+        ? `${displayPhone} — one tap opens your messages app with a new thread. I reply same day.`
+        : "Most owners prefer this — faster and more personal."
       : "Same idea as a text thread — one tap opens your mail app with a short template. I reply same day.";
 
   return (

@@ -7,6 +7,8 @@ import { CrmLiveDemoModal } from "./components/home/CrmLiveDemoModal";
 import { FeaturePillarSection } from "./components/home/FeaturePillarSection";
 import { HeroEngagement } from "./components/home/HeroEngagement";
 import { PricingTierCards } from "./components/home/PricingTierCards";
+import { pricingTiers } from "@/lib/pricingTiers";
+import { webAppPricingTiers } from "@/lib/webAppPricingTiers";
 import { ReviewMetrics } from "./components/home/ReviewMetrics";
 import { StepExplorer } from "./components/home/StepExplorer";
 import { Reveal } from "./components/Reveal";
@@ -298,14 +300,14 @@ export default function Home() {
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <Reveal>
               <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
-                Pricing
+                Review management pricing
               </h2>
               <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                 Pick the depth you need. Upgrade when you want CRM, insights, or social
                 on autopilot—all with local support in {serviceRegionShort}.
               </p>
 
-              <PricingTierCards />
+              <PricingTierCards tiers={pricingTiers} defaultSelectedId="growth" accent="teal" />
 
               <div className="mt-10 flex flex-col gap-3 rounded-2xl border border-emerald-200/90 bg-emerald-50/90 px-4 py-4 text-sm leading-relaxed text-emerald-950 shadow-sm dark:border-emerald-900/50 dark:bg-emerald-950/35 dark:text-emerald-100 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
                 <span
@@ -359,6 +361,34 @@ export default function Home() {
               <p className="mt-10 text-center text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                 All plans include: first month free · no setup fee · no annual contract ·
                 data migration included · local developer you can text
+              </p>
+            </Reveal>
+          </div>
+        </section>
+
+        <section
+          id="web-apps"
+          className="scroll-mt-20 border-y border-zinc-200/80 bg-zinc-50/80 py-16 dark:border-zinc-800/80 dark:bg-zinc-900/20 sm:py-20"
+        >
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <Reveal>
+              <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
+                Web application services
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                No hidden fees. No lock-in. Cancel anytime. Websites built for small businesses
+                in {serviceRegionShort}—from a free one-page starter to full-service care.
+              </p>
+
+              <PricingTierCards
+                tiers={webAppPricingTiers}
+                defaultSelectedId="web-growth"
+                accent="violet"
+              />
+
+              <p className="mt-10 text-center text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                All plans include hosting-ready delivery · No contracts · Built for small
+                businesses
               </p>
             </Reveal>
           </div>

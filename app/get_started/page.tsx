@@ -18,6 +18,8 @@ type PageProps = {
 export default async function GetStartedPage({ searchParams }: PageProps) {
   const { plan } = await searchParams;
   const tier = getPricingTierByPlanId(plan) ?? getDefaultPricingTier();
+  const isWebPlan = tier.service === "web";
+  const pricingBackHref = isWebPlan ? "/#web-apps" : "/#pricing";
 
   return (
     <div className="min-h-full bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
@@ -31,17 +33,19 @@ export default async function GetStartedPage({ searchParams }: PageProps) {
         <div className="relative">
           <p className="text-sm font-medium text-violet-700 dark:text-violet-400">
             <Link
-              href="/#pricing"
+              href={pricingBackHref}
               className="transition-colors hover:text-violet-900 dark:hover:text-violet-300"
             >
-              ← Back to pricing
+              ← Back to {isWebPlan ? "web pricing" : "pricing"}
             </Link>
           </p>
           <h1 className="mt-6 text-2xl font-semibold tracking-tight sm:text-3xl">
-            Get started
+            {isWebPlan ? "Get your website started" : "Get started"}
           </h1>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            A few details and we&apos;ll reach out to finish setup—no payment today.
+            {isWebPlan
+              ? "Tell us about your business—we'll reach out about your site. No payment today."
+              : "A few details and we'll reach out to finish setup—no payment today."}
           </p>
 
           <div className="mt-10 rounded-3xl border border-zinc-200/90 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/80 sm:p-10">
