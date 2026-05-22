@@ -20,6 +20,8 @@ export type FeaturePillarProps = {
   };
   /** Optional CTA link (e.g. live app URL). */
   liveDemoHref?: string;
+  /** Real product UI — contain in dark frame, hide decorative icon. */
+  screenshot?: boolean;
 };
 
 export function FeaturePillarSection({
@@ -33,6 +35,7 @@ export function FeaturePillarSection({
   variant = "white",
   image,
   liveDemoHref = "/#how-it-works",
+  screenshot = false,
 }: FeaturePillarProps) {
   const isExternal = liveDemoHref.startsWith("http");
   const ctaLabel = isExternal ? "Open live app" : "See how it works";
@@ -84,20 +87,32 @@ export function FeaturePillarSection({
             className={reverse ? "lg:order-1" : "lg:order-2"}
           >
             <div className="mx-auto flex max-w-md flex-col items-center gap-5 lg:mx-0 lg:max-w-none">
-              <span
-                className="inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-violet-200/80 bg-violet-50 text-3xl shadow-sm dark:border-violet-900/60 dark:bg-violet-950/50"
-                aria-hidden
+              {!screenshot ? (
+                <span
+                  className="inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-violet-200/80 bg-violet-50 text-3xl shadow-sm dark:border-violet-900/60 dark:bg-violet-950/50"
+                  aria-hidden
+                >
+                  {visualSymbol}
+                </span>
+              ) : null}
+              <div
+                className={`feature-mockup relative w-full overflow-hidden rounded-2xl border shadow-lg ring-1 ring-black/5 dark:ring-white/10 ${
+                  screenshot
+                    ? "aspect-[4/3] border-zinc-800 bg-black sm:aspect-[16/10]"
+                    : "aspect-[4/3] border-zinc-200/90 bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900"
+                }`}
               >
-                {visualSymbol}
-              </span>
-              <div className="feature-mockup relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-zinc-200/90 bg-zinc-100 shadow-lg ring-1 ring-black/5 dark:border-zinc-700 dark:bg-zinc-900 dark:ring-white/10">
                 <Image
                   src={image.src}
                   alt={image.alt}
                   fill
-                  className="object-cover"
+                  className={
+                    screenshot
+                      ? "object-contain object-center p-2 sm:p-3"
+                      : "object-cover"
+                  }
                   sizes="(max-width: 1024px) 100vw, 45vw"
-                  priority={id === "extension"}
+                  priority={screenshot || id === "extension"}
                 />
               </div>
             </div>

@@ -2,8 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { careerLensMarketing } from "@/lib/careerLensMarketing";
+import { siliconLensMarketing } from "@/lib/siliconLensMarketing";
 
-const { liveAppUrl, liveViewName, githubUrl } = careerLensMarketing;
+const { liveAppUrl, liveViewName } = careerLensMarketing;
+const { productName: siliconName } = siliconLensMarketing;
 
 export function SiteHeader() {
   return (
@@ -24,42 +26,34 @@ export function SiteHeader() {
         </Link>
         <nav className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 text-xs text-zinc-600 sm:gap-x-4 sm:text-sm dark:text-zinc-400">
           <Link
-            href="/#preview"
+            href="/#careerlens"
             className="transition-colors hover:text-violet-600 dark:hover:text-violet-400"
           >
-            Product
+            CareerLens
           </Link>
           <Link
-            href="/#gap-analysis"
+            href="/#siliconlens"
+            className="transition-colors hover:text-emerald-600 dark:hover:text-emerald-400"
+          >
+            {siliconName}
+          </Link>
+          <Link
+            href="/#spacy"
             className="transition-colors hover:text-violet-600 dark:hover:text-violet-400"
           >
-            Gap analysis
+            SpaCy
           </Link>
-          <Link
-            href="/#stack"
-            className="hidden transition-colors hover:text-violet-600 sm:inline dark:hover:text-violet-400"
-          >
-            Stack
-          </Link>
-          <a
-            href={githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden transition-colors hover:text-violet-600 sm:inline dark:hover:text-violet-400"
-          >
-            GitHub
-          </a>
           <a
             href={liveAppUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full bg-violet-700 px-4 py-1.5 font-medium text-white transition-transform duration-200 hover:scale-[1.03] hover:bg-violet-600 active:scale-[0.98] dark:bg-violet-600 dark:hover:bg-violet-500"
+            className="rounded-full bg-violet-700 px-4 py-1.5 font-medium text-white transition-transform duration-200 hover:bg-violet-600"
           >
-            Try {liveViewName}
+            {liveViewName}
           </a>
           <Link
             href="/get_in_touch"
-            className="rounded-full border border-zinc-300 px-4 py-1.5 font-medium text-zinc-800 transition-colors hover:border-zinc-400 dark:border-zinc-600 dark:text-zinc-200 dark:hover:border-zinc-500"
+            className="rounded-full border border-zinc-300 px-4 py-1.5 font-medium text-zinc-800 dark:border-zinc-600 dark:text-zinc-200"
           >
             Contact
           </Link>

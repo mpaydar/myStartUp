@@ -12,18 +12,17 @@ export function CareerLensStackSection() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal>
           <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
-            Open monorepo architecture
+            CareerLens · SpaCy-first architecture
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Three deployable surfaces—same product, production-grade split between
-            Next.js, Python NLP, and the browser extension.
+            {careerLensMarketing.spacyNote} Gemini handles bullets after SpaCy classifies the gap.
           </p>
         </Reveal>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
           {careerLensStack.map((item, index) => (
             <Reveal key={item.name} delayMs={index * 60}>
-              <article className="h-full rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/60">
+              <article className="h-full rounded-2xl border border-violet-200/80 bg-white p-5 shadow-sm dark:border-violet-900/40 dark:bg-zinc-950/60">
                 <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-400">
                   {item.deploy}
                 </p>
@@ -40,7 +39,6 @@ export function CareerLensStackSection() {
 
         <Reveal delayMs={200}>
           <p className="mt-10 text-center text-sm text-zinc-600 dark:text-zinc-400">
-            Source on{" "}
             <a
               href={githubUrl}
               target="_blank"

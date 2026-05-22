@@ -42,7 +42,11 @@ const meetingStartTimeOptions = getMeetingStartTimeOptions();
 const SERVICE_INTERESTS = [
   {
     id: "career_lens",
-    label: "CareerLens AI — ResumeSnap & career platform",
+    label: "CareerLens AI — ResumeSnap (SpaCy gap analysis)",
+  },
+  {
+    id: "silicon_lens",
+    label: "SiliconLens / freeLenser — hardware flipping platform",
   },
   {
     id: "early_access",
@@ -51,10 +55,6 @@ const SERVICE_INTERESTS = [
   {
     id: "partnership",
     label: "Partnership or integration",
-  },
-  {
-    id: "custom_ai_platform",
-    label: "Custom AI platform or product build",
   },
 ] as const;
 

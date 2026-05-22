@@ -3,6 +3,9 @@ import Link from "next/link";
 
 import { CareerLensProductPreview } from "./components/home/CareerLensProductPreview";
 import { CareerLensStackSection } from "./components/home/CareerLensStackSection";
+import { PlatformProductsSection } from "./components/home/PlatformProductsSection";
+import { SiliconLensSection } from "./components/home/SiliconLensSection";
+import { SpacyEngineSection } from "./components/home/SpacyEngineSection";
 import {
   careerLensFeatureSections,
   careerLensHowItWorks,
@@ -16,18 +19,14 @@ import { StepExplorer } from "./components/home/StepExplorer";
 import { Reveal } from "./components/Reveal";
 import { SiteHeader } from "./components/SiteHeader";
 
-const { brand, companyTagline, flagshipProduct, contactEmail } = siteMarketing;
-const {
-  liveAppUrl,
-  liveViewName,
-  githubUrl,
-  freemiumNote,
-  dashboardTagline,
-} = careerLensMarketing;
+const { brand, companyTagline, firstProduct, secondProduct, secondPlatform, contactEmail } =
+  siteMarketing;
+const { liveAppUrl, liveViewName, githubUrl, freemiumNote, dashboardTagline, productName } =
+  careerLensMarketing;
 
 export const metadata: Metadata = {
-  title: `${flagshipProduct} — ${liveViewName} | ${brand}`,
-  description: careerLensMarketing.dashboardTagline,
+  title: `${brand} — ${firstProduct} & ${secondProduct} (${secondPlatform})`,
+  description: siteMarketing.companyDescription,
 };
 
 export default function Home() {
@@ -40,17 +39,21 @@ export default function Home() {
       <main>
         <HeroSection />
 
+        <PlatformProductsSection />
+
+        <SpacyEngineSection />
+
         <section
-          id="product"
+          id="careerlens"
           className="scroll-mt-20 border-y border-zinc-200/80 bg-zinc-950 py-16 text-zinc-100 dark:border-zinc-800/80 sm:py-20"
         >
           <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
             <Reveal>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-400">
-                Flagship product · open source
+                Platform 1 · first AI solution
               </p>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-                {flagshipProduct}
+                {productName}
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-zinc-300">
                 {dashboardTagline}
@@ -61,23 +64,17 @@ export default function Home() {
                   href={liveAppUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex h-12 items-center justify-center rounded-2xl bg-violet-600 px-8 text-sm font-semibold text-white transition-[transform,background-color,box-shadow] duration-200 hover:bg-violet-500 hover:shadow-lg active:scale-[0.99]"
+                  className="group inline-flex h-12 items-center justify-center rounded-2xl bg-violet-600 px-8 text-sm font-semibold text-white hover:bg-violet-500"
                 >
-                  Launch {liveViewName}
-                  <span
-                    className="ml-2 inline-block transition-transform group-hover:translate-x-0.5"
-                    aria-hidden
-                  >
-                    ↗
-                  </span>
+                  Launch {liveViewName} ↗
                 </a>
                 <a
                   href={githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-12 items-center justify-center rounded-2xl border border-zinc-600 px-8 text-sm font-semibold text-zinc-200 transition-colors hover:border-zinc-400 hover:bg-zinc-900"
+                  className="inline-flex h-12 items-center justify-center rounded-2xl border border-zinc-600 px-8 text-sm font-semibold text-zinc-200 hover:border-zinc-400"
                 >
-                  View on GitHub
+                  GitHub
                 </a>
               </div>
             </Reveal>
@@ -98,7 +95,10 @@ export default function Home() {
             visualSymbol={section.visualSymbol}
             reverse={section.reverse}
             variant={section.variant}
-            liveDemoHref={section.externalCta ? liveAppUrl : `/#${section.id}`}
+            screenshot={section.screenshot}
+            liveDemoHref={
+              section.externalCta ? liveAppUrl : `/#${section.id === "resume" ? "careerlens" : section.id}`
+            }
           />
         ))}
 
@@ -111,35 +111,26 @@ export default function Home() {
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <Reveal>
               <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
-                How it works
+                How {productName} works
               </h2>
               <p className="mx-auto mt-3 max-w-2xl text-center text-zinc-600 dark:text-zinc-400">
-                From resume upload to gap analysis, tailoring, and interview prep—the
-                flow in the{" "}
+                SpaCy-first gap analysis, then Gemini tailoring—the{" "}
                 <a
                   href={githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-violet-700 hover:underline dark:text-violet-400"
                 >
-                  CareerLens monorepo
+                  open monorepo
                 </a>
                 .
-              </p>
-              <p className="mx-auto mt-6 max-w-2xl text-center">
-                <a
-                  href={liveAppUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-semibold text-violet-700 underline-offset-4 transition-colors hover:text-violet-600 hover:underline dark:text-violet-400 dark:hover:text-violet-300"
-                >
-                  Open the live app ↗
-                </a>
               </p>
             </Reveal>
             <StepExplorer steps={[...careerLensHowItWorks]} />
           </div>
         </section>
+
+        <SiliconLensSection />
 
         <section
           id="platform"
@@ -147,23 +138,17 @@ export default function Home() {
         >
           <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
             <Reveal>
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                {brand}
-              </h2>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{brand}</h2>
               <p className="mt-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-                {companyTagline}. {flagshipProduct} is our first shipped platform—built
-                with production ML infrastructure (SpaCy, FastAPI, Terraform, AKS) and
-                a founder who uses it on real job searches.
+                {companyTagline}. {firstProduct} shipped first; {secondProduct} on {secondPlatform}{" "}
+                targets hardware flippers and freelancer sourcers—with SpaCy at the center of both.
               </p>
               <Link
                 href="/get_in_touch"
-                className="group mt-10 inline-flex h-12 items-center justify-center rounded-full border-2 border-violet-600 bg-transparent px-8 text-sm font-semibold text-violet-700 transition-[transform,background-color,box-shadow] duration-200 hover:scale-[1.02] hover:bg-violet-50 hover:shadow-md active:scale-[0.98] dark:border-violet-500 dark:text-violet-300 dark:hover:bg-violet-950/40"
+                className="group mt-10 inline-flex h-12 items-center justify-center rounded-full border-2 border-violet-600 px-8 text-sm font-semibold text-violet-700 hover:bg-violet-50 dark:text-violet-300 dark:hover:bg-violet-950/40"
               >
                 Partner or get early access
-                <span
-                  className="ml-2 inline-block transition-transform group-hover:translate-x-1"
-                  aria-hidden
-                >
+                <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">
                   →
                 </span>
               </Link>
@@ -177,37 +162,25 @@ export default function Home() {
           <p>
             {footerPhone ? (
               <>
-                <a
-                  href={`tel:${footerPhone.replace(/\D/g, "")}`}
-                  className="text-zinc-600 underline-offset-2 transition-colors hover:text-violet-600 hover:underline dark:text-zinc-400 dark:hover:text-violet-400"
-                >
+                <a href={`tel:${footerPhone.replace(/\D/g, "")}`} className="hover:text-violet-600">
                   {footerPhone}
                 </a>
                 {" · "}
               </>
             ) : null}
-            <a
-              href={`mailto:${contactEmail}`}
-              className="text-zinc-600 underline-offset-2 transition-colors hover:text-violet-600 hover:underline dark:text-zinc-400 dark:hover:text-violet-400"
-            >
+            <a href={`mailto:${contactEmail}`} className="hover:text-violet-600">
               {contactEmail}
             </a>
             {" · "}
-            <a
-              href={liveAppUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-zinc-600 underline-offset-2 transition-colors hover:text-violet-600 hover:underline dark:text-zinc-400 dark:hover:text-violet-400"
-            >
+            <a href={liveAppUrl} target="_blank" rel="noopener noreferrer" className="hover:text-violet-600">
               {liveViewName}
             </a>
             {" · "}
-            <a
-              href={githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-zinc-600 underline-offset-2 transition-colors hover:text-violet-600 hover:underline dark:text-zinc-400 dark:hover:text-violet-400"
-            >
+            <Link href="/#siliconlens" className="hover:text-emerald-600">
+              {secondPlatform}
+            </Link>
+            {" · "}
+            <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="hover:text-violet-600">
               GitHub
             </a>
           </p>

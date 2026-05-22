@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: `${siteMarketing.flagshipProduct} — ${careerLensMarketing.liveViewName} | ${siteMarketing.brand}`,
-  description: careerLensMarketing.dashboardTagline,
+  title: `${siteMarketing.brand} — ${siteMarketing.firstProduct} & ${siteMarketing.secondProduct}`,
+  description: siteMarketing.companyDescription,
   verification: {
     google: "PzP1KnZNQqKnlPiBf86EqoyfHQahhM7kl2RH7D4Uakc",
   },
