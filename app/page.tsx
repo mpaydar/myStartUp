@@ -143,15 +143,23 @@ export default function Home() {
                 {companyTagline}. {firstProduct} shipped first; {secondProduct} on {secondPlatform}{" "}
                 targets hardware flippers and freelancer sourcers—with SpaCy at the center of both.
               </p>
+              <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href="/about"
+                className="inline-flex h-12 items-center justify-center rounded-full border-2 border-zinc-300 px-8 text-sm font-semibold text-zinc-800 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-200 dark:hover:bg-zinc-900"
+              >
+                About us
+              </Link>
               <Link
                 href="/get_in_touch"
-                className="group mt-10 inline-flex h-12 items-center justify-center rounded-full border-2 border-violet-600 px-8 text-sm font-semibold text-violet-700 hover:bg-violet-50 dark:text-violet-300 dark:hover:bg-violet-950/40"
+                className="group inline-flex h-12 items-center justify-center rounded-full border-2 border-violet-600 px-8 text-sm font-semibold text-violet-700 hover:bg-violet-50 dark:text-violet-300 dark:hover:bg-violet-950/40"
               >
                 Partner or get early access
                 <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">
                   →
                 </span>
               </Link>
+              </div>
             </Reveal>
           </div>
         </section>

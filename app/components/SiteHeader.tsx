@@ -39,9 +39,15 @@ export function SiteHeader() {
           </Link>
           <Link
             href="/#spacy"
-            className="transition-colors hover:text-violet-600 dark:hover:text-violet-400"
+            className="hidden transition-colors hover:text-violet-600 sm:inline dark:hover:text-violet-400"
           >
             SpaCy
+          </Link>
+          <Link
+            href="/about"
+            className="transition-colors hover:text-violet-600 dark:hover:text-violet-400"
+          >
+            About
           </Link>
           <a
             href={liveAppUrl}
