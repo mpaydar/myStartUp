@@ -22,7 +22,7 @@ export function SiliconLensSection() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <Reveal>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">
-              Platform {siliconLensMarketing.productOrder} · {platformName}
+              Example solution · {platformName}
             </p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
               {productName}

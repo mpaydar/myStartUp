@@ -41,16 +41,16 @@ const meetingStartTimeOptions = getMeetingStartTimeOptions();
 
 const SERVICE_INTERESTS = [
   {
+    id: "custom_ai_solution",
+    label: "Custom AI software solution (new build or scope)",
+  },
+  {
     id: "career_lens",
-    label: "CareerLens AI — ResumeSnap (SpaCy gap analysis)",
+    label: "CareerLens AI — ResumeSnap (example product)",
   },
   {
     id: "silicon_lens",
-    label: "SiliconLens / freeLenser — hardware flipping platform",
-  },
-  {
-    id: "early_access",
-    label: "Early access or product feedback",
+    label: "SiliconLens / freeLenser (example product)",
   },
   {
     id: "partnership",

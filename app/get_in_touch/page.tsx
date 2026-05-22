@@ -10,7 +10,7 @@ import { SiteHeader } from "../components/SiteHeader";
 export const metadata: Metadata = {
   title: "Get in touch — SimBay AI",
   description:
-    "Contact SimBay AI about CareerLens AI, early access, partnerships, or custom AI platform work.",
+    "Contact SimBay AI about custom AI software solutions, partnerships, or our example products.",
 };
 
 type PageProps = {
@@ -46,15 +46,19 @@ export default async function GetInTouchPage({ searchParams }: PageProps) {
             Get in touch
           </h1>
           <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-            Questions about{" "}
+            Interested in{" "}
+            <strong className="font-medium text-zinc-800 dark:text-zinc-200">
+              custom AI software
+            </strong>
+            , our example solutions (
             <strong className="font-medium text-zinc-800 dark:text-zinc-200">
               CareerLens AI
             </strong>
-            , early access to{" "}
+            ,{" "}
             <strong className="font-medium text-zinc-800 dark:text-zinc-200">
-              ResumeSnap
+              SiliconLens
             </strong>
-            , or partnering on the next SimBay AI platform? Share details below and
+            ), or a partnership? Share details below and
             attach any brief or screenshots that help.
           </p>
 

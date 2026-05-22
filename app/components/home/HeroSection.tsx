@@ -106,45 +106,36 @@ export function HeroSection() {
         </ul>
 
         <div className="animate-hero-in-delay-4 mt-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-          <a
-            href={liveAppUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/#solutions"
             className="group inline-flex h-12 min-h-[3rem] flex-1 items-center justify-center rounded-2xl border-2 border-violet-700 bg-violet-700 px-6 text-sm font-semibold text-white transition-[transform,background-color] duration-200 hover:bg-violet-600 sm:max-w-xs sm:flex-initial"
           >
-            {careerLensMarketing.productName} ↗
-          </a>
-          <Link
-            href="/#siliconlens"
-            className="inline-flex h-12 min-h-[3rem] flex-1 items-center justify-center rounded-2xl border-2 border-emerald-700 bg-emerald-700 px-6 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 sm:max-w-xs sm:flex-initial"
-          >
-            {siliconLensMarketing.productName}
+            Our solutions
           </Link>
           <Link
             href="/get_in_touch"
             className="inline-flex h-12 min-h-[3rem] flex-1 items-center justify-center rounded-2xl border-2 border-zinc-900 bg-white px-6 text-sm font-semibold text-zinc-900 hover:bg-zinc-50 dark:border-zinc-100 dark:bg-zinc-950 dark:text-zinc-50 sm:max-w-xs sm:flex-initial"
           >
-            Contact
+            Start a project
           </Link>
         </div>
 
         <p className="animate-hero-in-delay-4 mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
-          {liveViewName}:{" "}
+          Examples:{" "}
           <a
             href={liveAppUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium text-violet-700 underline-offset-2 hover:underline dark:text-violet-400"
           >
-            career-lens-ai-v2.vercel.app
+            {careerLensMarketing.productName}
           </a>
           {" · "}
-          {siliconLensMarketing.platformName} on{" "}
           <Link
             href="/#siliconlens"
             className="font-medium text-emerald-700 underline-offset-2 hover:underline dark:text-emerald-400"
           >
-            SiliconLens
+            {siliconLensMarketing.productName}
           </Link>
         </p>
       </div>

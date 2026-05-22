@@ -30,7 +30,7 @@ export const teamMembers: TeamMember[] = [
     imageSrc: "/team/moe-bayat.png",
     imageAlt:
       "Moe Bayat, founder of SimBay AI — professional headshot in white shirt and navy tie",
-    bio: "Systems Architect and Backend/Data Engineer with 4+ years of experience building high-scale, fault-tolerant infrastructure. My background ranges from designing privacy-preserving FHE pipelines in research environments to deploying containerized microservices and AI-orchestrated controllers in production. M.S. in Computer Science from NJIT.",
+    bio: "Founder of SimBay AI. Systems Architect and Backend/Data Engineer with 4+ years of experience building high-scale, fault-tolerant infrastructure and designing AI software solutions. Background spans privacy-preserving FHE pipelines in research to containerized microservices and SpaCy-powered NLP in production. M.S. in Computer Science from NJIT.",
     links: [
       { label: "LinkedIn", href: "https://linkedin.com/in/bayattheanalyst" },
       { label: "GitHub", href: "https://github.com/mpaydar" },
@@ -43,6 +43,6 @@ export const teamMembers: TeamMember[] = [
     imageSrc: "/team/sima-alibeygi.png",
     imageAlt:
       "Sima Alibeygi, Executive Manager at SimBay AI — professional headshot in navy blazer",
-    bio: "Executive Manager at SimBay AI—leading operations, coordination, and execution across our AI platforms and product initiatives.",
+    bio: "Executive Manager at SimBay AI—leading operations, coordination, and execution across client engagements and AI software initiatives.",
   },
 ];

@@ -2,6 +2,8 @@ import { siteMarketing } from "@/lib/siteMarketing";
 import { Reveal } from "../Reveal";
 
 export function SpacyEngineSection() {
+  const { featuredSolutions } = siteMarketing;
+
   return (
     <section
       id="spacy"
@@ -10,18 +12,19 @@ export function SpacyEngineSection() {
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         <Reveal>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-700 dark:text-violet-400">
-            Core LLM layer
+            How we build
           </p>
           <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-            Built on SpaCy—not keyword bots
+            SpaCy at the core of every solution
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-            {siteMarketing.spacyHighlight}
+            {siteMarketing.spacyHighlight} Each engagement adds the right surface—extensions,
+            APIs, dashboards, vision, or LLM layers—around that semantic foundation.
           </p>
           <ul className="mx-auto mt-8 max-w-xl space-y-3 text-left text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
             <li className="flex gap-2">
               <span className="font-semibold text-violet-700 dark:text-violet-400">
-                CareerLens:
+                {featuredSolutions.careerLens}:
               </span>
               <span>
                 Resume–JD fit with aligned, missing, and context-mismatch skills; MLflow-tracked
@@ -30,11 +33,20 @@ export function SpacyEngineSection() {
             </li>
             <li className="flex gap-2">
               <span className="font-semibold text-emerald-700 dark:text-emerald-400">
-                SiliconLens:
+                {featuredSolutions.siliconLens}:
               </span>
               <span>
-                Dirty eBay listing text → VRAM clues, error behaviors, and condition entities for
-                margin math.
+                Unstructured marketplace listings → VRAM clues, error behaviors, and condition
+                entities for margin math.
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+                Your domain:
+              </span>
+              <span>
+                We apply the same design discipline to new industries—custom taxonomies, workflows,
+                and integrations.
               </span>
             </li>
           </ul>

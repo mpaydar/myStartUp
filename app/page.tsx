@@ -19,14 +19,14 @@ import { StepExplorer } from "./components/home/StepExplorer";
 import { Reveal } from "./components/Reveal";
 import { SiteHeader } from "./components/SiteHeader";
 
-const { brand, companyTagline, firstProduct, secondProduct, secondPlatform, contactEmail } =
+const { brand, companyTagline, companyDescription, featuredSolutions, contactEmail } =
   siteMarketing;
 const { liveAppUrl, liveViewName, githubUrl, freemiumNote, dashboardTagline, productName } =
   careerLensMarketing;
 
 export const metadata: Metadata = {
-  title: `${brand} — ${firstProduct} & ${secondProduct} (${secondPlatform})`,
-  description: siteMarketing.companyDescription,
+  title: `${brand} — ${companyTagline}`,
+  description: companyDescription,
 };
 
 export default function Home() {
@@ -50,7 +50,7 @@ export default function Home() {
           <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
             <Reveal>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-400">
-                Platform 1 · first AI solution
+                Example solution · {featuredSolutions.careerLens}
               </p>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
                 {productName}
@@ -140,8 +140,9 @@ export default function Home() {
             <Reveal>
               <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{brand}</h2>
               <p className="mt-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-                {companyTagline}. {firstProduct} shipped first; {secondProduct} on {secondPlatform}{" "}
-                targets hardware flippers and freelancer sourcers—with SpaCy at the center of both.
+                {companyDescription} Examples on this site include {featuredSolutions.careerLens}{" "}
+                and {featuredSolutions.siliconLens} on {featuredSolutions.freelenser}—we partner on
+                new AI software beyond any single product line.
               </p>
               <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
@@ -185,7 +186,7 @@ export default function Home() {
             </a>
             {" · "}
             <Link href="/#siliconlens" className="hover:text-emerald-600">
-              {secondPlatform}
+              {featuredSolutions.freelenser}
             </Link>
             {" · "}
             <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="hover:text-violet-600">

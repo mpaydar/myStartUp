@@ -10,7 +10,7 @@ import { getTeamMemberInitials, teamMembers } from "@/lib/team";
 export const metadata: Metadata = {
   title: `About us — ${siteMarketing.brand}`,
   description:
-    "Meet the SimBay AI team—building SpaCy-powered platforms including CareerLens AI and SiliconLens on freeLenser.",
+    "Meet the SimBay AI team—we design AI software solutions, with SpaCy-powered NLP at the core.",
 };
 
 export default function AboutPage() {
@@ -31,7 +31,6 @@ export default function AboutPage() {
             About us
           </h1>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-            {brand} builds AI platforms where SpaCy does the semantic heavy lifting.{" "}
             {companyDescription}
           </p>
         </Reveal>
@@ -45,7 +44,7 @@ export default function AboutPage() {
               Team
             </h2>
             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-              The people behind CareerLens AI, SiliconLens, and the platforms we ship next.
+              The people designing and shipping AI software solutions at {brand}.
             </p>
           </Reveal>
 

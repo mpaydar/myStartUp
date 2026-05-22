@@ -26,14 +26,20 @@ export function SiteHeader() {
         </Link>
         <nav className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 text-xs text-zinc-600 sm:gap-x-4 sm:text-sm dark:text-zinc-400">
           <Link
-            href="/#careerlens"
+            href="/#solutions"
             className="transition-colors hover:text-violet-600 dark:hover:text-violet-400"
+          >
+            Solutions
+          </Link>
+          <Link
+            href="/#careerlens"
+            className="hidden transition-colors hover:text-violet-600 sm:inline dark:hover:text-violet-400"
           >
             CareerLens
           </Link>
           <Link
             href="/#siliconlens"
-            className="transition-colors hover:text-emerald-600 dark:hover:text-emerald-400"
+            className="hidden transition-colors hover:text-emerald-600 sm:inline dark:hover:text-emerald-400"
           >
             {siliconName}
           </Link>

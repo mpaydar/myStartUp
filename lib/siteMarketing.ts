@@ -1,21 +1,30 @@
 /**
- * SimBay AI — AI platform company. SpaCy-powered NLP across products.
+ * SimBay AI — designs and ships AI software solutions (SpaCy NLP at the core).
  */
 export const siteMarketing = {
   brand: "SimBay AI",
-  companyTagline: "AI platforms powered by SpaCy NLP",
+  companyTagline: "Designing AI software solutions",
   companyDescription:
-    "We build production AI platforms where SpaCy does the heavy semantic lifting—first for careers, now for hardware flippers and freelancers.",
+    "We design and build production AI software—custom platforms, extensions, and NLP services that turn messy real-world data into clear decisions. SpaCy-powered semantic analysis is our foundation; we layer dashboards, APIs, and multimodal AI where each problem requires it.",
+  solutionsIntro:
+    "Examples of AI solutions we've designed and shipped—not an exhaustive list of everything we build.",
   spacyHighlight:
-    "SpaCy is our core LLM layer: custom taxonomies, PhraseMatcher, and context-fit scoring—not brittle keyword bots.",
-  firstProduct: "CareerLens AI",
-  secondProduct: "SiliconLens",
-  secondPlatform: "freeLenser",
+    "SpaCy is our core NLP layer: custom taxonomies, PhraseMatcher, and context-fit scoring—not brittle keyword bots.",
+  featuredSolutions: {
+    careerLens: "CareerLens AI",
+    siliconLens: "SiliconLens",
+    freelenser: "freeLenser",
+  },
   contactEmail: "moe@simbayai.tech",
   phoneDisplay: "917-434-3777",
   textDirectSmsHref: "" as string,
   textDirectButtonLabel: "Send a text",
 } as const;
+
+/** @deprecated Use featuredSolutions — kept for imports during transition */
+export const firstProduct = siteMarketing.featuredSolutions.careerLens;
+export const secondProduct = siteMarketing.featuredSolutions.siliconLens;
+export const secondPlatform = siteMarketing.featuredSolutions.freelenser;
 
 export function getTextDirectSmsCta():
   | { href: string; label: string; displayPhone: string }
@@ -64,7 +73,7 @@ export function getContactDirectCta(): {
   const email = siteMarketing.contactEmail.trim();
   const subject = encodeURIComponent("SimBay AI — quick question");
   const body = encodeURIComponent(
-    "Hi — I'm interested in SimBay AI platforms. (Sent from your contact page.)\n\n",
+    "Hi — I'm interested in SimBay AI software solutions. (Sent from your contact page.)\n\n",
   );
   return {
     href: `mailto:${email}?subject=${subject}&body=${body}`,
