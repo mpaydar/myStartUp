@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Reveal } from "../components/Reveal";
 import { SiteHeader } from "../components/SiteHeader";
 import { siteMarketing } from "@/lib/siteMarketing";
-import { teamMembers } from "@/lib/team";
+import { getTeamMemberInitials, teamMembers } from "@/lib/team";
 
 export const metadata: Metadata = {
   title: `About us — ${siteMarketing.brand}`,
@@ -55,14 +55,25 @@ export default function AboutPage() {
                 <Reveal delayMs={100 + index * 80}>
                   <article className="flex flex-col gap-8 sm:flex-row sm:items-start">
                     <div className="relative mx-auto aspect-[3/4] w-44 shrink-0 overflow-hidden rounded-2xl border border-zinc-200/90 bg-zinc-100 shadow-lg ring-1 ring-black/5 dark:border-zinc-700 dark:bg-zinc-900 dark:ring-white/10 sm:mx-0 sm:w-52">
-                      <Image
-                        src={member.imageSrc}
-                        alt={member.imageAlt}
-                        fill
-                        className="object-cover object-center"
-                        sizes="(max-width: 640px) 176px, 208px"
-                        priority={index === 0}
-                      />
+                      {member.imageSrc ? (
+                        <Image
+                          src={member.imageSrc}
+                          alt={member.imageAlt ?? member.name}
+                          fill
+                          className="object-cover object-center"
+                          sizes="(max-width: 640px) 176px, 208px"
+                          priority={index === 0}
+                        />
+                      ) : (
+                        <div
+                          className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-950 dark:to-violet-900"
+                          aria-hidden
+                        >
+                          <span className="text-3xl font-semibold tracking-tight text-violet-700 dark:text-violet-300">
+                            {getTeamMemberInitials(member.name)}
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <div className="min-w-0 flex-1 text-center sm:text-left">
                       <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">

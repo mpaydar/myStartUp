@@ -3,11 +3,24 @@ export type TeamMember = {
   id: string;
   name: string;
   role: string;
-  imageSrc: string;
-  imageAlt: string;
+  imageSrc?: string;
+  imageAlt?: string;
   bio: string;
   links?: readonly { label: string; href: string }[];
 };
+
+function memberInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+export function getTeamMemberInitials(name: string): string {
+  return memberInitials(name);
+}
 
 export const teamMembers: TeamMember[] = [
   {
@@ -22,5 +35,14 @@ export const teamMembers: TeamMember[] = [
       { label: "LinkedIn", href: "https://linkedin.com/in/bayattheanalyst" },
       { label: "GitHub", href: "https://github.com/mpaydar" },
     ],
+  },
+  {
+    id: "sima-alibeygi",
+    name: "Sima Alibeygi",
+    role: "Executive Manager",
+    imageSrc: "/team/sima-alibeygi.png",
+    imageAlt:
+      "Sima Alibeygi, Executive Manager at SimBay AI — professional headshot in navy blazer",
+    bio: "Executive Manager at SimBay AI—leading operations, coordination, and execution across our AI platforms and product initiatives.",
   },
 ];
