@@ -8,7 +8,7 @@ import { SiteHeader } from "../components/SiteHeader";
 export const metadata: Metadata = {
   title: "Get started — SimBay AI",
   description:
-    "Tell us about your business and confirm your SimBay plan. First month free, cancel anytime.",
+    "Request early access to CareerLens AI or get in touch about SimBay AI platforms.",
 };
 
 type PageProps = {
@@ -20,11 +20,7 @@ export default async function GetStartedPage({ searchParams }: PageProps) {
   const tier = getPricingTierByPlanId(plan) ?? getDefaultPricingTier();
   const isWebPlan = tier.service === "web";
   const isAiPlan = tier.service === "ai";
-  const pricingBackHref = isWebPlan
-    ? "/#web-apps"
-    : isAiPlan
-      ? "/#ai-api"
-      : "/#pricing";
+  const pricingBackHref = isWebPlan || isAiPlan ? "/#platform" : "/#product";
 
   return (
     <div className="min-h-full bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">

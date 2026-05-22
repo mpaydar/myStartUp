@@ -41,24 +41,20 @@ const meetingStartTimeOptions = getMeetingStartTimeOptions();
 
 const SERVICE_INTERESTS = [
   {
-    id: "simbay_platform",
-    label: "SimBay — Google reviews, CRM, insights & social",
+    id: "career_lens",
+    label: "CareerLens AI — ResumeSnap & career platform",
   },
   {
-    id: "form_crm_design",
-    label: "Form or CRM design",
+    id: "early_access",
+    label: "Early access or product feedback",
   },
   {
-    id: "landing_new",
-    label: "New landing page for my business",
+    id: "partnership",
+    label: "Partnership or integration",
   },
   {
-    id: "landing_modernize",
-    label: "Modernize my existing site or landing page",
-  },
-  {
-    id: "ai_api_integration",
-    label: "AI & API integration — chatbots, automations, custom builds",
+    id: "custom_ai_platform",
+    label: "Custom AI platform or product build",
   },
 ] as const;
 
@@ -525,7 +521,7 @@ export function ContactForm({
           required
           rows={6}
           maxLength={MAX_MESSAGE_LENGTH}
-          placeholder="Example: We run a salon in Jersey City and want more Google reviews. We also need a cleaner booking form and a one-page site that matches our brand."
+          placeholder="Example: I'm job hunting in tech and want early access to CareerLens. I'd like to tailor my resume per posting with ResumeSnap."
           className={`${textAreaClass} mt-4`}
           onChange={(e) => setMessageLength(e.target.value.length)}
         />

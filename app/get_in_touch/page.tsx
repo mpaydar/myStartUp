@@ -10,7 +10,7 @@ import { SiteHeader } from "../components/SiteHeader";
 export const metadata: Metadata = {
   title: "Get in touch — SimBay AI",
   description:
-    "Book a demo in NJ or NY: review software, form and CRM design, or a new or refreshed landing page for your business.",
+    "Contact SimBay AI about CareerLens AI, early access, partnerships, or custom AI platform work.",
 };
 
 type PageProps = {
@@ -34,10 +34,10 @@ export default async function GetInTouchPage({ searchParams }: PageProps) {
           aria-hidden
         />
         <div className="relative">
-          <p className="text-sm font-medium text-teal-700 dark:text-teal-400">
+          <p className="text-sm font-medium text-violet-700 dark:text-violet-400">
             <Link
               href="/"
-              className="transition-colors hover:text-teal-600 dark:hover:text-teal-300"
+              className="transition-colors hover:text-violet-600 dark:hover:text-violet-300"
             >
               ← Back to home
             </Link>
@@ -46,20 +46,16 @@ export default async function GetInTouchPage({ searchParams }: PageProps) {
             Get in touch
           </h1>
           <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-            Serving{" "}
+            Questions about{" "}
             <strong className="font-medium text-zinc-800 dark:text-zinc-200">
-              New Jersey and New York
+              CareerLens AI
             </strong>
-            . Book time for a walkthrough of SimBay, or ask about{" "}
+            , early access to{" "}
             <strong className="font-medium text-zinc-800 dark:text-zinc-200">
-              form and CRM design
-            </strong>{" "}
-            and a{" "}
-            <strong className="font-medium text-zinc-800 dark:text-zinc-200">
-              landing page
-            </strong>{" "}
-            for your business—new build or a refresh so it feels more modern.
-            Share details below and attach any brief or screenshots that help.
+              ResumeSnap
+            </strong>
+            , or partnering on the next SimBay AI platform? Share details below and
+            attach any brief or screenshots that help.
           </p>
 
           <div className="relative mt-8 aspect-[21/9] w-full overflow-hidden rounded-2xl border border-zinc-200/80 shadow-md dark:border-zinc-700">

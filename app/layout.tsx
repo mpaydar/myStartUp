@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+import { careerLensMarketing } from "@/lib/careerLensMarketing";
+import { siteMarketing } from "@/lib/siteMarketing";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -13,15 +16,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SimBay AI — Google review management for NJ & NY",
-  description:
-    "Automated Google review requests, monitoring, and responses for local businesses in New Jersey and New York. Simple pricing, no long contracts.",
-    verification: {
-      google: "PzP1KnZNQqKnlPiBf86EqoyfHQahhM7kl2RH7D4Uakc",
-    },
+  title: `${siteMarketing.flagshipProduct} — ${careerLensMarketing.liveViewName} | ${siteMarketing.brand}`,
+  description: careerLensMarketing.dashboardTagline,
+  verification: {
+    google: "PzP1KnZNQqKnlPiBf86EqoyfHQahhM7kl2RH7D4Uakc",
+  },
 };
-
-
 
 export default function RootLayout({
   children,

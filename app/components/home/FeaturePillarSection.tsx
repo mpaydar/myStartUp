@@ -18,7 +18,7 @@ export type FeaturePillarProps = {
     src: string;
     alt: string;
   };
-  /** Opens the interactive CRM live demo (hash route). */
+  /** Optional CTA link (e.g. live app URL). */
   liveDemoHref?: string;
 };
 
@@ -32,8 +32,11 @@ export function FeaturePillarSection({
   reverse = false,
   variant = "white",
   image,
-  liveDemoHref = "/#crm-live-demo",
+  liveDemoHref = "/#how-it-works",
 }: FeaturePillarProps) {
+  const isExternal = liveDemoHref.startsWith("http");
+  const ctaLabel = isExternal ? "Open live app" : "See how it works";
+
   const bg =
     variant === "muted"
       ? "border-y border-zinc-200/80 bg-zinc-50/80 dark:border-zinc-800/80 dark:bg-zinc-900/25"
@@ -54,7 +57,7 @@ export function FeaturePillarSection({
             <p className="mt-4 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
               {subheading}
             </p>
-            <ul className="mt-6 list-disc space-y-4 pl-5 text-base leading-relaxed text-zinc-800 marker:text-teal-600 dark:text-zinc-200 dark:marker:text-teal-400">
+            <ul className="mt-6 list-disc space-y-4 pl-5 text-base leading-relaxed text-zinc-800 marker:text-violet-600 dark:text-zinc-200 dark:marker:text-violet-400">
               {bullets.map((item, i) => (
                 <li key={i}>{item}</li>
               ))}
@@ -65,9 +68,13 @@ export function FeaturePillarSection({
             <p className="mt-6">
               <a
                 href={liveDemoHref}
-                className="text-sm font-semibold text-teal-700 underline-offset-4 transition-colors hover:text-teal-600 hover:underline dark:text-teal-400 dark:hover:text-teal-300"
+                {...(isExternal
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+                className="text-sm font-semibold text-violet-700 underline-offset-4 transition-colors hover:text-violet-600 hover:underline dark:text-violet-400 dark:hover:text-violet-300"
               >
-                See how it works
+                {ctaLabel}
+                {isExternal ? " ↗" : null}
               </a>
             </p>
           </Reveal>
@@ -78,7 +85,7 @@ export function FeaturePillarSection({
           >
             <div className="mx-auto flex max-w-md flex-col items-center gap-5 lg:mx-0 lg:max-w-none">
               <span
-                className="inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-teal-200/80 bg-teal-50 text-3xl shadow-sm dark:border-teal-900/60 dark:bg-teal-950/50"
+                className="inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-violet-200/80 bg-violet-50 text-3xl shadow-sm dark:border-violet-900/60 dark:bg-violet-950/50"
                 aria-hidden
               >
                 {visualSymbol}
@@ -90,7 +97,7 @@ export function FeaturePillarSection({
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 45vw"
-                  priority={id === "reviews"}
+                  priority={id === "extension"}
                 />
               </div>
             </div>
