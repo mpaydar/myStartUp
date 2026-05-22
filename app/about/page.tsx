@@ -54,13 +54,13 @@ export default function AboutPage() {
               <li key={member.id}>
                 <Reveal delayMs={100 + index * 80}>
                   <article className="flex flex-col gap-8 sm:flex-row sm:items-start">
-                    <div className="relative mx-auto h-48 w-48 shrink-0 overflow-hidden rounded-2xl border border-zinc-200/90 bg-zinc-100 shadow-lg ring-1 ring-black/5 dark:border-zinc-700 dark:bg-zinc-900 dark:ring-white/10 sm:mx-0 sm:h-52 sm:w-52">
+                    <div className="relative mx-auto aspect-[3/4] w-44 shrink-0 overflow-hidden rounded-2xl border border-zinc-200/90 bg-zinc-100 shadow-lg ring-1 ring-black/5 dark:border-zinc-700 dark:bg-zinc-900 dark:ring-white/10 sm:mx-0 sm:w-52">
                       <Image
                         src={member.imageSrc}
                         alt={member.imageAlt}
                         fill
-                        className="object-cover object-top"
-                        sizes="(max-width: 640px) 192px, 208px"
+                        className="object-cover object-center"
+                        sizes="(max-width: 640px) 176px, 208px"
                         priority={index === 0}
                       />
                     </div>
